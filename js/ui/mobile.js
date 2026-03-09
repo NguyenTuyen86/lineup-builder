@@ -1102,6 +1102,9 @@ function setupPlayerTouch(player) {
       if (player._player) {
         player._player.x = xPercent;
         player._player.y = yPercent;
+        
+        // 🔍 DEBUG
+        console.log(`📍 Drag #${player._player.number}: ${xPercent.toFixed(1)}, ${yPercent.toFixed(1)}`);
       }
       
       // Update wrapper position directly in pixels (visual)
@@ -1119,6 +1122,11 @@ function setupPlayerTouch(player) {
     const touchDuration = Date.now() - touchStartTime;
     const wasDragging = isDragging;
     const wasLongPress = isLongPress;
+    
+    // 🔍 DEBUG: Show final position after drag
+    if (wasDragging && player._player) {
+      console.log(`✅ Release #${player._player.number} at: ${player._player.x.toFixed(1)}, ${player._player.y.toFixed(1)}`);
+    }
     
     // Reset visual
     player.style.opacity = '';

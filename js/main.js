@@ -707,7 +707,7 @@ function renderBenchWithCallbacks() {
         console.log('🎯 Dragging:', player.name);
       },
       onSwap: (benchPlayer, lineupPlayer) => {
-        alert('🔄 SWAP CALLED!'); // Debug
+       // alert('🔄 SWAP CALLED!'); // Debug
         
         // 🆕 SAVE ALL current player data INCLUDING custom positions
         const playerDataMap = new Map();
@@ -727,7 +727,10 @@ function renderBenchWithCallbacks() {
         alert(`💾 Saved: ${playerDataMap.size} players`); // Debug
         
         // Perform swap
-        swapPlayers(benchPlayer, lineupPlayer);
+        //swapPlayers(benchPlayer, lineupPlayer);
+        const benchPlayerInSquad = state.squad.find(p => p.number === benchPlayer.number);
+        const lineupPlayerInSquad = state.squad.find(p => p.number === lineupPlayer.number);
+        swapPlayers(benchPlayerInSquad, lineupPlayerInSquad);
         
         // Update state arrays
         const newLineup = state.squad.filter(p => p.location === 'lineup')

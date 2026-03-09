@@ -638,17 +638,16 @@ function renderBenchWithCallbacks() {
       // Save positions from state.lineup  
       const positionBackup = new Map();
       
+      let savedList = '';
       state.lineup.forEach(p => {
         if (p.x !== undefined && p.y !== undefined) {
           positionBackup.set(p.number, { x: p.x, y: p.y });
+          savedList += `#${p.number} `;
         }
       });
       
-      // 🔍 Show what we saved for Player 7
-      const saved7 = positionBackup.get(7);
-      if (saved7) {
-        alert(`SAVE #7: ${saved7.x.toFixed(0)}, ${saved7.y.toFixed(0)}`);
-      }
+      // 🔍 Show ALL saved player numbers
+      alert(`SAVED ${positionBackup.size} players: ${savedList}`);
       
       // Swap
       swapPlayers(benchPlayer, lineupPlayer);
@@ -659,6 +658,7 @@ function renderBenchWithCallbacks() {
       const newBench = state.squad.filter(p => p.location === 'bench');
       
       // RESTORE
+      let restoredList = '';
       let restoredCount = 0;
       newLineup.forEach(p => {
         if (positionBackup.has(p.number)) {
@@ -666,14 +666,12 @@ function renderBenchWithCallbacks() {
           p.x = backup.x;
           p.y = backup.y;
           restoredCount++;
+          restoredList += `#${p.number} `;
         }
       });
       
-      // 🔍 Show what we restored for Player 7
-      const restored7 = newLineup.find(p => p.number === 7);
-      if (restored7) {
-        alert(`RESTORE #7: ${restored7.x.toFixed(0)}, ${restored7.y.toFixed(0)}`);
-      }
+      // 🔍 Show ALL restored player numbers
+      alert(`RESTORED ${restoredCount} players: ${restoredList}`);
       
       // Update state
       state.lineup = newLineup;
@@ -684,12 +682,13 @@ function renderBenchWithCallbacks() {
       renderLineup();
       renderBenchWithCallbacks();
       
-      // Check after render
+      // 🔍 Check after render - show positions
       setTimeout(() => {
-        const final7 = state.lineup.find(p => p.number === 7);
-        if (final7) {
-          alert(`FINAL #7: ${final7.x.toFixed(0)}, ${final7.y.toFixed(0)}`);
-        }
+        let finalList = '';
+        state.lineup.forEach(p => {
+          finalList += `#${p.number}:${p.x.toFixed(0)},${p.y.toFixed(0)} `;
+        });
+        alert(`FINAL: ${finalList}`);
       }, 100);
       
     } catch (error) {

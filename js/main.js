@@ -7,11 +7,6 @@
  */
 
 // ============================================
-// DEBUG (Mobile)
-// ============================================
-import { initDebugPanel, debugLog } from './debug-panel.js';
-
-// ============================================
 // IMPORTS
 // ============================================
 
@@ -310,12 +305,6 @@ const elements = {
 // ============================================
 
 function initializeApp() {
-  // 🐛 Init debug panel for mobile
-  if (window.innerWidth < 1024) {
-    initDebugPanel();
-    debugLog('🚀 App starting...');
-  }
-  
   // Initialize formation dropdown
   updateFormationDropdown();
   
@@ -618,6 +607,12 @@ function renderBenchWithCallbacks() {
         }
       });
       
+      // 🔍 ALERT CHECK: What did we save?
+      const player5 = positionBackup.get(5);
+      if (player5) {
+        alert(`SAVE #5: ${player5.x.toFixed(0)}, ${player5.y.toFixed(0)}`);
+      }
+      
       // Swap
       swapPlayers(benchPlayer, lineupPlayer);
       
@@ -641,6 +636,12 @@ function renderBenchWithCallbacks() {
       
       console.log(`✅ Restored ${restoredCount} positions`);
       
+      // 🔍 ALERT CHECK: What did we restore for player 5?
+      const newPlayer5 = newLineup.find(p => p.number === 5);
+      if (newPlayer5) {
+        alert(`RESTORE #5: ${newPlayer5.x.toFixed(0)}, ${newPlayer5.y.toFixed(0)}`);
+      }
+      
       // Update state
       state.lineup = newLineup;
       state.bench = newBench;
@@ -656,6 +657,12 @@ function renderBenchWithCallbacks() {
         state.lineup.forEach(p => {
           console.log(`  #${p.number}: ${p.x.toFixed(1)}, ${p.y.toFixed(1)}`);
         });
+        
+        // 🔍 FINAL CHECK
+        const finalPlayer5 = state.lineup.find(p => p.number === 5);
+        if (finalPlayer5) {
+          alert(`FINAL #5: ${finalPlayer5.x.toFixed(0)}, ${finalPlayer5.y.toFixed(0)}`);
+        }
       }, 100);
       
     } catch (error) {

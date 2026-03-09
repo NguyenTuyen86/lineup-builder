@@ -1118,6 +1118,7 @@ function setupPlayerTouch(player) {
       }
       
       // Update wrapper position directly in pixels (visual)
+      wrapper.style.left = `${x}px`;
       wrapper.style.top = `${y}px`;
       
       // Name is now inside player element, so it moves automatically!

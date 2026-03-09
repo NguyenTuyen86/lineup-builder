@@ -1,0 +1,18 @@
+<!-- Simple Football Icon SVG (convert to PNG 192x192 and 512x512) -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" width="192" height="192">
+  <!-- Background -->
+  <rect width="192" height="192" fill="#00a651" rx="32"/>
+  
+  <!-- Football/Soccer Ball -->
+  <circle cx="96" cy="96" r="60" fill="#fff"/>
+  
+  <!-- Pentagon pattern -->
+  <path d="M 96 46 L 111 72 L 100 96 L 92 96 L 81 72 Z" fill="#00a651"/>
+  <path d="M 111 72 L 136 81 L 126 106 L 100 96 Z" fill="#222"/>
+  <path d="M 126 106 L 122 136 L 96 126 L 100 96 Z" fill="#00a651"/>
+  <path d="M 96 126 L 70 136 L 66 106 L 92 96 Z" fill="#222"/>
+  <path d="M 66 106 L 56 81 L 81 72 L 92 96 Z" fill="#00a651"/>
+  
+  <!-- Ball outline -->
+  <circle cx="96" cy="96" r="60" fill="none" stroke="#222" stroke-width="2"/>
+</svg>

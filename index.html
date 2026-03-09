@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lineup Builder</title>
+  
+  <!-- PWA Support -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#00a651">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Lineup">
+  
+  <!-- Icons -->
+  <link rel="apple-touch-icon" href="icon-192.png">
+  
+  <link rel="stylesheet" href="css/styles.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+<body>
+  <!-- Skip to content link (mobile only) -->
+  <a href="#pitch" class="skip-link" style="display:none">Skip to formation</a>
+  
+  <!-- Mobile Header (hidden on desktop) -->
+  <div class="mobile-header" style="display:none" role="navigation" aria-label="Mobile navigation">
+    <div class="mobile-title">⚽ Lineup Builder</div>
+    <div class="mobile-tabs" role="tablist">
+      <button class="mobile-tab active" data-mobile-tab="formation" role="tab" aria-selected="true" aria-controls="formation-panel">
+        📍 Lineup
+      </button>
+      <button class="mobile-tab" data-mobile-tab="squad" role="tab" aria-selected="false" aria-controls="squad-panel">
+        👥 Squad
+      </button>
+    </div>
+  </div>
+
+  <div class="container">
+    <aside class="sidebar">
+      <h2 style="margin:0 0 16px 0;font-size:18px;color:#fff">⚽ Lineup Builder</h2>
+      
+      <!-- 🆕 TAB NAVIGATION -->
+      <div class="tab-nav">
+        <button class="tab-btn active" data-tab="formation">⚙️ Formation</button>
+        <button class="tab-btn" data-tab="squad">👥 Squad</button>
+      </div>
+      
+      <!-- 🆕 TAB: FORMATION -->
+      <div class="tab-content active" id="tab-formation">
+      
+      <div class="panel">
+        <label style="display:block;margin-bottom:4px;font-size:13px">Số cầu thủ</label>
+        <select id="count" style="width:100%;padding:6px;margin-bottom:12px">
+          <option value="5">5 Players</option>
+          <option value="7">7 Players</option>
+          <option value="11" selected>11 Players</option>
+        </select>
+
+        <label style="display:block;margin-bottom:4px;font-size:13px">Sơ đồ chiến thuật</label>
+        <select id="formation" style="width:100%;padding:6px;margin-bottom:12px"></select>
+
+        <div style="margin:12px 0">
+          <label style="display:inline-flex;align-items:center;cursor:pointer;font-size:13px">
+            <input type="checkbox" id="flipFormation" style="margin-right:6px">
+            <span>Lật sơ đồ (180°)</span>
+          </label>
+        </div>
+
+        <button id="resetPosition" style="width:100%;margin:8px 0;padding:8px;background:#444;color:#fff;border:none;border-radius:4px;cursor:pointer">Vị trí đội hình ban đầu</button>
+        <button id="resetAll" style="width:100%;margin:0 0 8px 0;padding:8px;background:#e00000;color:#fff;border:none;border-radius:4px;cursor:pointer;font-weight:600">Reset tất cả</button>
+      </div>
+
+      <!-- 👕 TEAM INFO PANEL -->
+      <div class="panel">
+        <h3 style="margin:0 0 12px 0;font-size:14px">👕 Team Info</h3>
+        
+        <!-- Logo Preview (Large 120x120) -->
+        <div style="display:flex;justify-content:center;margin-bottom:12px">
+          <div style="position:relative;width:120px;height:120px;border-radius:12px;border:3px solid #444;background:#222;display:flex;align-items:center;justify-content:center;overflow:hidden">
+            <span id="teamLogoPlaceholder" style="font-size:48px;position:absolute">👕</span>
+            <img id="teamLogoPreview" src="" alt="Team Logo" style="width:100%;height:100%;border-radius:12px;object-fit:contain;display:none;position:absolute;z-index:1;padding:8px">
+          </div>
+        </div>
+        
+        <!-- Logo Buttons -->
+        <div style="display:flex;gap:8px;margin-bottom:12px">
+          <button id="uploadTeamLogoBtn" style="flex:1;padding:8px;background:#00a651;color:#fff;border:none;border-radius:4px;cursor:pointer;font-weight:600;font-size:12px">
+            📷 Upload
+          </button>
+          <button id="deleteTeamLogoBtn" style="flex:1;padding:8px;background:#e00000;color:#fff;border:none;border-radius:4px;cursor:pointer;font-weight:600;font-size:12px">
+            🗑️ Delete
+          </button>
+        </div>
+        <input type="file" id="teamLogoUpload" accept="image/*" style="display:none">
+        
+        <!-- Team Name -->
+        <label style="display:block;margin-bottom:4px;font-size:13px">Team Name</label>
+        <input type="text" id="teamName" placeholder="Enter team name" style="width:calc(100% - 16px);padding:8px;margin-bottom:12px;background:#1a1a1a;border:1px solid #333;color:#fff;border-radius:4px">
+        
+        <!-- Show/Hide Toggle -->
+        <div style="margin-top:12px">
+          <label style="display:inline-flex;align-items:center;cursor:pointer;font-size:13px">
+            <input type="checkbox" id="showTeamInfo" checked style="margin-right:8px">
+            <span>Show on pitch</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h3 style="margin:0 0 12px 0;font-size:14px">🎨 Màu sắc</h3>
+        
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+          <label style="font-size:13px;flex-shrink:0">Theme</label>
+          <select id="themeSelect" style="flex:1;padding:6px">
+            <option value="classic">Classic Green</option>
+            <option value="dark">Dark Mode</option>
+            <option value="modern">Modern Blue</option>
+            <option value="retro">Retro Orange</option>
+          </select>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 60px;gap:8px;align-items:center;margin-bottom:8px">
+          <label style="font-size:13px">Sân cỏ</label>
+          <input type="color" id="pitchColor" value="#0b5d34">
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 60px;gap:8px;align-items:center;margin-bottom:8px">
+          <label style="font-size:13px">Cầu thủ</label>
+          <input type="color" id="playerColor" value="#333333">
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 60px;gap:8px;align-items:center;margin-bottom:8px">
+          <label style="font-size:13px">Thủ môn</label>
+          <input type="color" id="gkColor" value="#1e4dbb">
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 60px;gap:8px;align-items:center;margin-bottom:8px">
+          <label style="font-size:13px">Viền</label>
+          <input type="color" id="playerBorderColor" value="#00ff40">
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 60px;gap:8px;align-items:center;margin-bottom:8px">
+          <label style="font-size:13px">Mũi tên</label>
+          <input type="color" id="arrowColor" value="#ff3333">
+        </div>
+
+        <button id="resetColor" style="margin:8px 8px 0 8px;width:calc(100% - 16px)">Reset Color</button>
+      </div>
+
+      
+
+      <div class="panel">
+        <h3 style="margin:0 0 12px 0;font-size:14px">⚙️ Hiển thị</h3>
+        <label style="display:flex;align-items:center;margin-bottom:8px;cursor:pointer;font-size:13px">
+          <input type="checkbox" id="toggleNames" checked style="margin-right:8px">
+          <span>Hiển thị tên</span>
+        </label>
+        <label style="display:flex;align-items:center;margin-bottom:8px;cursor:pointer;font-size:13px">
+          <input type="checkbox" id="togglePositions" checked style="margin-right:8px">
+          <span>Hiển thị vị trí</span>
+        </label>
+        <label style="display:flex;align-items:center;margin-bottom:8px;cursor:pointer;font-size:13px">
+          <input type="checkbox" id="toggleNumbers" checked style="margin-right:8px">
+          <span>Hiển thị số áo</span>
+        </label>
+        <label style="display:flex;align-items:center;margin-bottom:8px;cursor:pointer;font-size:13px">
+          <input type="checkbox" id="toggleAvatars" checked style="margin-right:8px">
+          <span>Hiển thị avatar</span>
+        </label>
+      </div>
+
+      <div class="panel">
+        <h3 style="margin:0 0 12px 0;font-size:14px">💾 Lưu & Xuất</h3>
+        <div style="display:flex;gap:8px;margin-bottom:8px">
+          <button id="saveLineup" style="flex:1;padding:6px;font-size:12px">💾 Lưu</button>
+          <button id="loadLineup" style="flex:1;padding:6px;font-size:12px">📂 Tải</button>
+        </div>
+        <button id="exportBtn" style="width:100%;padding:8px;background:#00a651;color:#fff;border:none;border-radius:4px;cursor:pointer;font-weight:600">📸 Xuất đội hình</button>
+        <input type="file" id="importJSONInput" accept=".json" style="display:none">
+      </div>
+      
+      </div>
+      <!-- END TAB: FORMATION -->
+      
+<!-- 🆕 TAB: SQUAD -->
+      <div class="tab-content" id="tab-squad">
+        <div class="panel">
+          <h3 style="margin:0 0 12px 0;font-size:14px">👥 Squad Management</h3>
+          
+          <button id="addPlayerBtn" style="width:100%;padding:10px;background:#00a651;color:#fff;border:none;border-radius:4px;cursor:pointer;font-weight:600;margin-bottom:12px">
+            ➕ Add New Player
+          </button>
+          
+          <!-- ✅ Add Staff Button -->
+          <button id="addStaffBtn" style="width:100%;padding:10px;background:#00a651;color:#fff;border:none;border-radius:4px;cursor:pointer;font-weight:600;margin-bottom:12px">
+            ➕ Add Staff
+          </button>
+          
+          <div style="margin-bottom:12px">
+            <input type="text" id="squadSearch" placeholder="🔍 Search player..." style="width:calc(100% - 16px);padding:8px;">
+          </div>
+          
+          <div style="margin-bottom:8px;font-size:12px;color:#888">
+            <span id="squadStats">Total: 0 | Lineup: 0 | Bench: 0</span>
+          </div>
+          
+          <!-- Roster Export Button -->
+          <button id="exportRosterBtn" style="width:100%;padding:10px;background:#ff9500;color:#fff;border:none;border-radius:4px;cursor:pointer;font-weight:600;margin-top:12px">
+            📸 Xuất danh sách đội
+          </button>
+        </div>
+        
+        <div class="panel">
+          <h4 style="margin:0 0 8px 0;font-size:13px;color:#aaa">📋 All Players</h4>
+          <div id="squadList" class="squad-list">
+            <!-- Squad players will be rendered here -->
+          </div>
+        </div>
+      </div>
+      <!-- END TAB: SQUAD -->
+      
+    </aside>
+
+   
+
+    <main class="main-content">
+      <!-- Mobile Formation Controls (hidden on desktop) -->
+      <div class="mobile-formation-controls" style="display:none">
+        <select id="mobilePlayerCount" style="flex:0.7">
+          <option value="11">11 Players</option>
+          <option value="7">7 Players</option>
+          <option value="5">5 Players</option>
+        </select>
+        <select id="mobileFormationSelect" style="flex:1">
+          <option value="4-4-2">4-4-2</option>
+          <option value="4-3-3">4-3-3</option>
+          <option value="3-5-2">3-5-2</option>
+          <option value="4-2-3-1">4-2-3-1</option>
+          <option value="3-4-3">3-4-3</option>
+          <option value="5-3-2">5-3-2</option>
+        </select>
+        <button id="mobileFlipBtn">🔄</button>
+      </div>
+      
+      <!-- Mobile Toggles (hidden on desktop) -->
+      <div class="mobile-toggle-group" style="display:none">
+        <button class="mobile-toggle-btn active" data-toggle="numbers">🔢 Numbers</button>
+        <button class="mobile-toggle-btn active" data-toggle="names">👤 Names</button>
+        <button class="mobile-toggle-btn active" data-toggle="roles">⚽ Roles</button>
+      </div>
+      
+      <!-- Pitch (Left) -->
+      <div id="pitch" class="pitch" tabindex="0">
+    <div class="half-line"></div>
+     <div class="center-circle"></div>
+
+     <div class="penalty-box top"></div>
+    <div class="penalty-box bottom"></div>
+
+    <div class="goal-box top"></div>
+     <div class="goal-box bottom"></div>
+
+     <div class="penalty-spot top"></div>
+     <div class="penalty-spot bottom"></div>
+
+    <div class="penalty-arc top"></div>
+     <div class="penalty-arc bottom"></div>
+     
+     <div class="center-spot"></div>
+    </div>
+    
+    <!-- Right Column: Logo + Bench -->
+    <div class="pitch-area">
+      <!-- Team Header -->
+      <div id="teamHeader" class="team-header" style="display:none">
+        <img class="team-logo" src="" alt="">
+        <div class="team-name"></div>
+      </div>
+      
+      <!-- Bench Zone -->
+      <div class="bench-container">
+        <h3 class="bench-title">🪑 BENCH</h3>
+        <div id="bench" class="bench-zone">
+          <!-- Bench players will be rendered here -->
+        </div>
+      </div>
+    </div>
+    </main>
+
+    
+ <aside class="player-panel">
+        <div class="panel">
+        <h3 style="margin:0 0 12px 0;font-size:14px">👤 Cầu thủ</h3>
+        <label style="display:block;margin-bottom:4px;font-size:13px">Số áo</label>
+        <input type="text" id="num" placeholder="1" style="width:calc(100% - 16px);padding:6px;margin-bottom:8px">
+
+        <label style="display:block;margin-bottom:4px;font-size:13px">Tên</label>
+        <input type="text" id="name" placeholder="Player 1" style="width:calc(100% - 16px);padding:6px;margin-bottom:8px">
+
+        <label style="display:block;margin-bottom:4px;font-size:13px">Vị trí</label>
+<select id="role" style="width:100%;padding:6px;margin-bottom:8px">
+
+  <!-- Goalkeeper -->
+  <option value="GK">GK</option>
+
+  <!-- Defenders -->
+  <option value="LB">LB</option>
+  <option value="LCB">LCB</option>
+  <option value="CB">CB</option>
+  <option value="RCB">RCB</option>
+  <option value="RB">RB</option>
+  <option value="LWB">LWB</option>
+  <option value="RWB">RWB</option>
+
+  <!-- Defensive Midfield -->
+  <option value="CDM">CDM</option>
+
+  <!-- Central Midfield -->
+  <option value="LCM">LCM</option>
+  <option value="CM">CM</option>
+  <option value="RCM">RCM</option>
+
+  <!-- Attacking Midfield -->
+  <option value="LAM">LAM</option>
+  <option value="CAM">CAM</option>
+  <option value="RAM">RAM</option>
+
+  <!-- Wide Midfield -->
+  <option value="LM">LM</option>
+  <option value="RM">RM</option>
+
+  <!-- Wingers -->
+  <option value="LW">LW</option>
+  <option value="RW">RW</option>
+
+  <!-- Forwards -->
+  <option value="CF">CF</option>
+  <option value="ST">ST</option>
+
+</select>
+
+
+        <label style="display:block;margin-bottom:4px;font-size:13px">Card Status</label>
+        <select id="cardStatus" style="width:100%;padding:6px;margin-bottom:12px">
+          <option value="">None</option>
+          <option value="yellow">Yellow Card</option>
+          <option value="red">Red Card</option>
+        </select>
+
+        <div style="margin:12px 0;padding:12px;background:#2a2a2a;border-radius:6px">
+          <div style="display:flex;justify-content:center;align-items:center;margin-bottom:8px;position:relative;width:80px;height:80px;margin:0 auto 8px auto">
+            <img id="avatarPreview" src="" alt="Avatar" style="display:none;width:80px;height:80px;border-radius:50%;object-fit:cover">
+            <div id="avatarPlaceholder" style="width:80px;height:80px;border-radius:50%;background:#444;display:flex;align-items:center;justify-content:center;color:#888;font-size:32px"></div>
+          </div>
+          <input type="file" id="avatarUpload" accept="image/*" style="display:none">
+          <div style="display:flex;gap:8px;justify-content:center">
+            <button id="uploadAvatarBtn" style="padding:6px 12px;background:#00a651;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:13px">Upload Avatar</button>
+            <button id="deleteAvatarBtn" style="padding:6px 12px;background:#b00000;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:13px">Xóa Avatar</button>
+          </div>
+        </div>
+
+        <div style="margin:12px 0;padding:8px;background:#2a2a2a;border-radius:6px">
+          <label style="display:flex;align-items:center;font-size:13px;margin-bottom:8px">
+            <span style="flex:1">Màu tùy chỉnh</span>
+            <input type="checkbox" id="useCustomColor" style="width:20px;margin-left:8px" />
+          </label>
+          <input type="color" id="playerCustomColor" value="#ff6b6b" disabled style="width:100%;height:32px;border:none;border-radius:4px;cursor:pointer">
+        </div>
+
+        <div style="margin:16px 0">
+          <h4 style="margin:0 0 8px 0;font-size:13px;text-align:center">Hướng di chuyển</h4>
+          <div class="move-grid">
+            <button data-dx="-1" data-dy="-1">↖</button>
+            <button data-dx="0" data-dy="-1">⬆</button>
+            <button data-dx="1" data-dy="-1">↗</button>
+            <button data-dx="-1" data-dy="0">⬅</button>
+            <button id="resetDirections" title="Reset all directions">✖</button>
+            <button data-dx="1" data-dy="0">➡</button>
+            <button data-dx="-1" data-dy="1">↙</button>
+            <button data-dx="0" data-dy="1">⬇</button>
+            <button data-dx="1" data-dy="1">↘</button>
+          </div>
+        </div>
+
+        <button id="resetPositionSelected" style="width:100%;margin:8px;padding:8px;background:#444;color:#fff;border:none;border-radius:4px;cursor:pointer">Vị trí ban đầu</button>
+        <button id="resetCurrent" style="width:100%;margin:0 8px 8px 8px;padding:8px;background:#666;color:#fff;border:none;border-radius:4px;cursor:pointer">Reset cầu thủ</button>
+      </div>
+    </aside>
+
+  </div>
+
+  <!-- Mobile Floating Action Buttons (hidden on desktop) -->
+  <div class="mobile-fab-container" style="display:none" role="group" aria-label="Quick actions">
+    <button class="mobile-fab" id="mobileSaveBtn" title="Save lineup" aria-label="Save lineup">
+      💾
+      <span class="sr-only">Save</span>
+    </button>
+    <button class="mobile-fab secondary" id="mobileExportBtn" title="Export as image" aria-label="Export lineup as image">
+      📸
+      <span class="sr-only">Export</span>
+    </button>
+  </div>
+
+  <!-- Mobile Bottom Sheet for Player Editing (hidden on desktop) -->
+  <div class="mobile-bottom-sheet" id="mobileEditSheet" role="dialog" aria-modal="true" aria-labelledby="mobileSheetTitle">
+    <div class="mobile-sheet-drag-handle"></div>
+    <div class="mobile-sheet-header">
+      <h3 class="mobile-sheet-title" id="mobileSheetTitle">Edit Player</h3>
+      <button class="mobile-sheet-close" id="mobileSheetClose">✕</button>
+    </div>
+    <div class="mobile-sheet-content" id="mobileSheetContent">
+      <!-- Player panel content will be cloned here -->
+    </div>
+  </div>
+
+  <script type="module" src="js/main.js"></script>
+  
+  <!-- Register Service Worker -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then(reg => console.log('✅ Service Worker registered'))
+          .catch(err => console.log('❌ SW registration failed:', err));
+      });
+    }
+  </script>
+</body>
+</html>

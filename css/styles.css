@@ -1,0 +1,2423 @@
+/* css/styles.css */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #1a1a1a;
+  color: #e0e0e0;
+  overflow: hidden;
+}
+
+.container {
+  display: flex;
+  height: 100vh;
+}
+
+.sidebar {
+  width: 320px;
+  background: #222;
+  padding: 16px;
+  overflow-y: auto;
+  border-right: 2px solid #333;
+}
+
+.sidebar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+  background: #1a1a1a;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background: #444;
+  border-radius: 4px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: row;  /* ✅ Horizontal layout */
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: #1a1a1a;
+  gap: 60px;  /* Space between pitch and right column */
+  flex-wrap: wrap;
+}
+
+.panel {
+  background: #2a2a2a;
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  border: 1px solid #333;
+}
+
+/* ========================================
+   PITCH - Tỷ lệ thực tế 105m x 68m
+   Chiều dài:rộng = 1.544:1
+   600px x 926px (làm tròn 900px cho đẹp)
+   ======================================== */
+.pitch {
+  width: 600px;
+  height: 900px;
+  background: #0b5d34;
+  position: relative;
+  border: 4px solid #fff;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+  flex-shrink: 0;  /* 🆕 Không co lại */
+}
+
+
+.player-wrapper {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  cursor: move;
+}
+
+.player {
+  width: 60px;
+  height: 60px;
+  background: #333;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;  /* ✅ Small gap between number and role when both shown */
+  font-size: 11px;
+  font-weight: bold;
+  color: #fff;
+  position: relative;
+  box-shadow: 0 0 0 3px #0b5d34, 0 0 0 5px #00ff40;
+  transition: transform 0.1s;
+  user-select: none;
+}
+
+.player:hover {
+  transform: scale(1.1);
+}
+
+.player.selected {
+  outline: 3px solid #ffd700;
+  outline-offset: 2px;
+  z-index: 10;
+}
+
+.player-number {
+  font-size: 20px;
+  font-weight: bold;
+  line-height: 1;
+  z-index: 2;  /* ✅ Above avatar (avatar is z-index: 0) */
+  position: relative;  /* ✅ Need position for z-index to work */
+  color: white;
+  text-align: center;
+  text-shadow:
+    -1px -1px 0 black,
+     1px -1px 0 black,
+    -1px  1px 0 black,
+     1px  1px 0 black;
+}
+
+.player-name {
+  position: absolute;
+  top: 120%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-top: 4px;
+
+  font-size: 16px;
+  max-width: 100px;
+  text-align: center;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+      color: white;
+      
+  text-shadow:
+    -2px -2px 0 rgba(0, 0, 0, 0.5),
+     2px -2px 0 rgba(0, 0, 0, 0.5),
+    -2px  2px 0 rgba(0, 0, 0, 0.5),
+     2px  2px 0 rgba(0, 0, 0, 0.5);
+
+}
+
+
+.player-role {
+  font-size: 12px;
+  padding: 2px 0;
+  white-space: nowrap;
+  color: white;
+  text-align: center;
+  z-index: 2;  /* ✅ Above avatar */
+  position: relative;  /* ✅ Need position for z-index to work */
+  text-shadow:
+    -1px -1px 0 black,
+     1px -1px 0 black,
+    -1px  1px 0 black,
+     1px  1px 0 black;
+}
+
+.player-avatar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  opacity: 1;
+  z-index: 0;
+}
+
+.card-indicator {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 16px;
+  height: 20px;
+  border-radius: 2px;
+  border: 1px solid #000;
+}
+
+.card-yellow {
+  background: #ffd400;
+}
+
+.card-red {
+  background: #e00000;
+}
+
+.direction-arrow {
+  position: absolute;
+  font-size: 24px;
+  color: #ff3333;
+  /* text-shadow: 01 01 2px #000000; */
+  text-shadow:
+    -1px -1px 0 black,
+     1px -1px 0 black,
+    -1px  1px 0 black,
+     1px  1px 0 black;
+
+  pointer-events: none;
+  user-select: none;
+  z-index: 1;
+}
+
+.move-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+  margin: 0 auto;
+  max-width: 180px;
+}
+
+.move-grid button {
+  padding: 12px;
+  font-size: 20px;
+  background: #333;
+  color: #fff;
+  border: 2px solid #444;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.move-grid button:hover {
+  background: #444;
+  transform: scale(1.05);
+}
+
+.move-grid button.active {
+  background: #00a651;
+  border-color: #00ff40;
+  box-shadow: 0 0 8px rgba(0, 255, 64, 0.4);
+}
+
+button {
+  background: #333;
+  color: #fff;
+  border: 1px solid #444;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.2s;
+  width: 100%;
+}
+
+button:hover {
+  background: #444;
+  border-color: #555;
+}
+
+button:active {
+  transform: scale(0.98);
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+input[type="text"],
+input[type="number"],
+select {
+  background: #333;
+  color: #fff;
+  border: 1px solid #444;
+  border-radius: 4px;
+  font-size: 13px;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus,
+select:focus {
+  outline: none;
+  border-color: #00a651;
+  box-shadow: 0 0 0 2px rgba(0, 166, 81, 0.2);
+}
+
+input[type="text"]:disabled,
+input[type="number"]:disabled,
+select:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+input[type="color"] {
+  cursor: pointer;
+  border: 1px solid #444;
+  border-radius: 4px;
+  background: #333;
+}
+
+input[type="checkbox"] {
+  cursor: pointer;
+  width: 18px;
+  height: 18px;
+}
+
+label {
+  color: #e0e0e0;
+  user-select: none;
+}
+
+h2, h3, h4 {
+  color: #fff;
+}
+
+@media (max-width: 1024px) {
+  .container {
+    flex-direction: column;
+  }
+  
+  .sidebar {
+    width: 100%;
+    max-height: 40vh;
+    border-right: none;
+    border-bottom: 2px solid #333;
+  }
+  
+  .pitch {
+    width: 400px;
+    height: 617px;  /* 400 * 1.544 = 617.6px (tỷ lệ FIFA chính xác) */
+  }
+}
+
+/* ========================================
+   PITCH MARKINGS - Tỷ lệ theo FIFA
+   Sân: 105m x 68m
+   ======================================== */
+
+/* Vạch giữa sân - 50% */
+.half-line {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: rgba(255,255,255,0.6);
+  transform: translateY(-50%);
+}
+
+/* Vòng tròn giữa sân - Đường kính 9.15m = 13.46% chiều dài */
+.center-circle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20%;  /* 13.46% chiều dài, tính trên width của pitch */
+  aspect-ratio: 1;
+  border: 2px solid rgba(255,255,255,0.6);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* Penalty box (vòng cấm) - 16.5m x 40.32m
+   Chiều cao: 16.5/105 = 15.71%
+   Chiều rộng: 40.32/68 = 59.29% */
+.penalty-box {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 59.3%;
+  height: 15.7%;
+  border: 2px solid rgba(255,255,255,0.6);
+}
+
+.penalty-box.top {
+  top: -2px;
+}
+
+.penalty-box.bottom {
+  bottom: -2px;
+}
+
+/* Goal box (vòng cấm nhỏ) - 5.5m x 18.32m
+   Chiều cao: 5.5/105 = 5.24%
+   Chiều rộng: 18.32/68 = 26.94% */
+.goal-box {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 27%;
+  height: 5.2%;
+  border: 2px solid rgba(255,255,255,0.6);
+}
+
+.goal-box.top {
+  top: -2px;
+}
+
+.goal-box.bottom {
+  bottom: -2px;
+}
+
+/* Penalty spot (điểm phạt đền) - Cách vạch 11m
+   11/105 = 10.48% */
+.penalty-spot {
+  position: absolute;
+  left: 50%;
+  width: 8px;
+  height: 8px;
+  background: #fff;
+  border-radius: 50%;
+  transform: translateX(-50%);
+}
+
+.penalty-spot.top {
+  top: 10.5%;
+}
+
+.penalty-spot.bottom {
+  bottom: 10.5%;
+}
+
+/* Penalty arc (cung tròn vòng cấm) - Bán kính 9.15m
+   Tính theo % như center circle để scale tự động
+   Radius: 9.15/68 = 13.46% chiều rộng sân
+   Width = đường kính = 26.9%, Height = radius = 13.46% */
+.penalty-arc {
+  position: absolute;
+  left: 50%;
+  width: 20%;  /* Đường kính (tương tự center circle) */
+  height: 6.5%; /* Nửa đường kính */
+  border: 2px solid rgba(255,255,255,0.6);
+  border-bottom: none;
+  border-radius: 50% 50% 0 0 / 100% 100% 0 0;  /* Tạo cung tròn hoàn hảo */
+  transform: translateX(-50%);
+}
+
+.penalty-arc.bottom {
+  top: 78.125%;
+}
+
+.penalty-arc.top {
+  bottom: 78.125%;
+  transform: translateX(-50%) rotate(180deg);
+}
+
+/* Center spot (điểm phát bóng giữa sân) */
+.center-spot {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 8px;
+  height: 8px;
+  background: #fff;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* ========================================
+   PITCH AREA - Right column with Logo + Bench
+   ======================================== */
+.pitch-area {
+  display: flex;
+  flex-direction: column;  /* ✅ Vertical: Logo on top, Bench below */
+  align-items: center;
+  gap: 0;  /* No gap - team header has margin-bottom */
+  flex-wrap: nowrap;
+}
+
+/* ========================================
+   BENCH ZONE
+   ======================================== */
+
+.bench-container {
+  width: 385px;
+  flex-shrink: 0;
+  align-self: flex-start;
+}
+
+.bench-title {
+  color: #fff;
+  font-size: 14px;
+  margin: 0 0 8px 0;
+  padding: 8px 12px;
+  background: #333;
+  border-radius: 4px 4px 0 0;
+  text-align: center;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+.bench-zone {
+  min-height: 120px;
+  max-height: none;  /* ✅ Bỏ max-height để tránh scroll */
+  background: #2a2a2a;
+  border: 2px solid #333;
+  border-radius: 0 0 8px 8px;
+  padding: 12px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);  /* 4 columns */
+  gap: 12px;
+  align-content: flex-start;
+}
+
+/* Remove scrollbar styles since no scroll needed */
+
+.bench-zone:empty::after {
+  content: 'Bench is empty';
+  grid-column: 1 / -1;  /* 🆕 Span all columns */
+  text-align: center;
+  color: #666;
+  font-size: 13px;
+  padding: 20px;
+}
+
+/* Bench player card */
+.bench-player {
+  width: 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px;
+  background: #333;
+  border: 2px solid #444;
+  border-radius: 8px;
+  cursor: move;
+  transition: all 0.2s;
+}
+
+.bench-player:hover {
+  background: #3a3a3a;
+  border-color: #555;
+  transform: translateY(-2px);
+}
+
+.bench-player-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: #444;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: bold;
+  color: #888;
+  position: relative;
+  overflow: hidden;
+}
+
+.bench-player-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.bench-player-number {
+  position: absolute;
+  bottom: 2px;   /* ✅ Dịch lên (was -2px) */
+  right: 2px;    /* ✅ Dịch sang trái (was -2px) */
+  width: 20px;
+  height: 20px;
+  background: #00a651;
+  border: 2px solid #2a2a2a;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: bold;
+  color: #fff;
+  z-index: 10;  /* Always on top */
+}
+
+/* ✅ Card indicators for bench players */
+.bench-card-indicator {
+  position: absolute;
+  top: 0px;     /* ✅ Dịch xuống (was -4px) */
+  left: 0px;    /* ✅ Dịch sang phải (was -4px) */
+  width: 14px;
+  height: 18px;
+  border-radius: 2px;
+  border: 1px solid #000;
+  z-index: 10;
+}
+
+.bench-card-yellow {
+  background: #ffd400;
+}
+
+.bench-card-red {
+  background: #e00000;
+}
+
+.bench-player-name {
+  font-size: 11px;
+  color: #e0e0e0;
+  text-align: center;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bench-player-role {
+  font-size: 10px;
+  color: #888;
+  background: #222;
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+
+/* Responsive bench */
+@media (max-width: 1024px) {
+  .main-content {
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .bench-container {
+    width: 100%;
+    max-width: 360px;
+  }
+  
+  .bench-zone {
+    grid-template-columns: repeat(4, 1fr);  /* Vẫn giữ 4 columns */
+    min-height: 100px;
+  }
+  
+  .bench-player {
+    width: auto;  /* Tự động fill grid cell */
+  }
+  
+  .bench-player-avatar {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+/* ========================================
+   TAB NAVIGATION
+   ======================================== */
+
+.tab-nav {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.tab-btn {
+  flex: 1;
+  padding: 10px;
+  background: #333;
+  color: #aaa;
+  border: 2px solid #444;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.tab-btn:hover {
+  background: #3a3a3a;
+  border-color: #555;
+}
+
+.tab-btn.active {
+  background: #00a651;
+  color: #fff;
+  border-color: #00ff40;
+  box-shadow: 0 0 8px rgba(0, 255, 64, 0.3);
+}
+
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+/* ========================================
+   SQUAD LIST
+   ======================================== */
+
+.squad-list {
+  /* ✅ No scroll - expand fully, parent panel scrolls */
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Scrollbar styles removed - squad-list no longer scrolls */
+
+.squad-player-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px;
+  background: #333;
+  border: 2px solid #444;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  min-height: 56px;  /* ✅ Đảm bảo height tối thiểu */
+}
+
+.squad-player-item:hover {
+  background: #3a3a3a;
+  border-color: #555;
+  transform: translateX(2px);
+}
+
+.squad-player-item.in-lineup {
+  border-left: 4px solid #00a651;
+}
+
+.squad-player-item.on-bench {
+  border-left: 4px solid #ffa500;
+}
+
+.squad-player-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #444;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: bold;
+  color: #888;
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.squad-player-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.squad-player-number {
+  position: absolute;
+  bottom: 0px;   /* ✅ Dịch lên (was -2px) */
+  right: 0px;    /* ✅ Dịch sang trái (was -2px) */
+  width: 18px;
+  height: 18px;
+  background: #00a651;
+  border: 2px solid #333;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: bold;
+  color: #fff;
+  z-index: 1;
+}
+
+.squad-player-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.squad-player-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.squad-player-meta {
+  font-size: 11px;
+  color: #888;
+  margin-top: 2px;
+}
+
+.squad-player-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.squad-player-actions button {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  background: #444;
+  border: 1px solid #555;
+  border-radius: 4px;
+  color: #aaa;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.squad-player-actions button:hover {
+  background: #555;
+  color: #fff;
+}
+
+.squad-player-actions button.delete:hover {
+  background: #e00000;
+  border-color: #e00000;
+  color: #fff;
+}
+
+.squad-player-item.selected {
+  border-color: #ffd700;
+  background: #3a3a3a;
+}
+
+/* Empty state */
+.squad-list:empty::after {
+  content: 'No players in squad';
+  display: block;
+  text-align: center;
+  padding: 40px 20px;
+  color: #666;
+  font-size: 13px;
+}
+
+/* Squad section headers */
+.squad-section-header {
+  font-size: 12px;
+  font-weight: 600;
+  color: #aaa;
+  padding: 8px 4px 4px 4px;
+  margin-top: 8px;
+  border-bottom: 1px solid #444;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.squad-section-header:first-child {
+  margin-top: 0;
+}
+
+/* ========================================
+   BENCH ADD/DELETE BUTTONS
+   ======================================== */
+
+.bench-add-btn {
+  width: 80px;
+  height: 100%;
+  min-height: 100px;
+  background: #2a2a2a;
+  border: 2px dashed #00a651;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  font-size: 24px;
+  color: #00a651;
+  padding: 8px;
+}
+
+.bench-add-btn span {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.bench-add-btn:hover {
+  background: #333;
+  border-color: #00ff40;
+  color: #00ff40;
+  transform: scale(1.05);
+}
+
+.bench-delete-btn {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  background: rgba(224, 0, 0, 0.8);
+  border: 1px solid #fff;
+  border-radius: 4px;
+  color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+  opacity: 0;
+}
+
+.bench-player {
+  position: relative;
+}
+
+.bench-player:hover .bench-delete-btn {
+  opacity: 1;
+}
+
+.bench-delete-btn:hover {
+  background: #ff0000;
+  transform: scale(1.1);
+}
+
+/* ========================================
+   AVATAR CROP MODAL
+   ======================================== */
+
+.avatar-crop-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.2s ease;
+}
+
+.avatar-crop-modal.closing {
+  animation: fadeOut 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+.avatar-crop-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(4px);
+}
+
+.avatar-crop-container {
+  position: relative;
+  width: 800px;  /* ✅ 800px */
+  max-width: 90vw;
+  max-height: 90vh;
+  background: #2a2a2a;
+  border: 2px solid #444;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.avatar-crop-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  background: #333;
+  border-bottom: 2px solid #444;
+}
+
+.avatar-crop-header h3 {
+  margin: 0;
+  font-size: 18px;
+  color: #fff;
+  font-weight: 600;
+}
+
+.avatar-crop-close {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  color: #888;
+  font-size: 24px;
+  cursor: pointer;
+  transition: color 0.2s;
+  line-height: 1;
+}
+
+.avatar-crop-close:hover {
+  color: #fff;
+}
+
+.avatar-crop-body {
+  padding: 24px;
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.avatar-crop-preview {
+  position: relative;
+  width: 300px;  /* ✅ 300px */
+  height: 300px;
+  margin: 0 auto;
+  background: #1a1a1a;
+  border-radius: 4px;
+  overflow: visible;
+}
+
+/* ✅ Dimmed overlay - 75% opacity on outside area */
+.avatar-crop-preview::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at center, transparent 50%, rgba(0, 0, 0, 0.75) 50%);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.avatar-crop-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+  user-select: none;
+  position: relative;
+  z-index: 1;
+  border-radius: 4px;
+}
+
+.avatar-crop-canvas:active {
+  cursor: grabbing;
+}
+
+.avatar-crop-mask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border: 3px solid #00a651;
+  border-radius: 50%;
+  pointer-events: none;
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.5), 0 4px 16px rgba(0, 166, 81, 0.4);
+  z-index: 3;
+}
+
+.avatar-crop-crosshair {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 30px;
+  height: 30px;
+  pointer-events: none;
+  z-index: 4;
+}
+
+.avatar-crop-crosshair::before,
+.avatar-crop-crosshair::after {
+  content: '';
+  position: absolute;
+  background: #00a651;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.8);
+}
+
+.avatar-crop-crosshair::before {
+  /* Horizontal line */
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 2px;
+  transform: translateY(-50%);
+}
+
+.avatar-crop-crosshair::after {
+  /* Vertical line */
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  transform: translateX(-50%);
+}
+
+.avatar-crop-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.avatar-crop-controls label {
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.zoom-value {
+  color: #00a651;
+  min-width: 45px;
+}
+
+.zoom-control {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.zoom-btn {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  background: #444;
+  border: 2px solid #555;
+  border-radius: 6px;
+  color: #fff;
+  font-size: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s;
+  line-height: 1;
+}
+
+.zoom-btn:hover {
+  background: #555;
+  border-color: #00a651;
+  color: #00a651;
+}
+
+.zoom-slider {
+  flex: 1;
+  height: 6px;
+  border-radius: 3px;
+  background: #444;
+  outline: none;
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none; /* Standard property */
+}
+
+.zoom-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #00a651;
+  border: 3px solid #2a2a2a;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.zoom-slider::-webkit-slider-thumb:hover {
+  background: #00ff40;
+  transform: scale(1.1);
+}
+
+.zoom-slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #00a651;
+  border: 3px solid #2a2a2a;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.zoom-slider::-moz-range-thumb:hover {
+  background: #00ff40;
+  transform: scale(1.1);
+}
+
+.zoom-hint {
+  font-size: 12px;
+  color: #888;
+  text-align: center;
+  padding: 8px;
+  background: rgba(0, 166, 81, 0.1);
+  border-radius: 6px;
+}
+
+.avatar-crop-footer {
+  display: flex;
+  gap: 12px;
+  padding: 16px 20px;
+  background: #333;
+  border-top: 2px solid #444;
+}
+
+.avatar-crop-footer button {
+  flex: 1;
+  padding: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  border: 2px solid;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.avatar-crop-cancel {
+  background: transparent;
+  border-color: #666;
+  color: #aaa;
+}
+
+.avatar-crop-cancel:hover {
+  background: #444;
+  border-color: #888;
+  color: #fff;
+}
+
+.avatar-crop-apply {
+  background: #00a651;
+  border-color: #00a651;
+  color: #fff;
+}
+
+.avatar-crop-apply:hover {
+  background: #00ff40;
+  border-color: #00ff40;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 166, 81, 0.4);
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .avatar-crop-container {
+    width: 95vw;
+  }
+  
+  .avatar-crop-preview {
+    width: 300px;  /* ✅ 300px on mobile */
+    height: 300px;
+  }
+  
+  .avatar-crop-body {
+    padding: 16px;
+  }
+}
+
+/* ========================================
+   PLAYER PANEL - DISABLED STATE
+   ======================================== */
+
+.player-panel input:disabled,
+.player-panel select:disabled,
+.player-panel button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.player-panel .move-grid button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* ========================================
+   TEAM HEADER - FIFA Style
+   ======================================== */
+.team-header {
+  /* ✅ Clean design without background */
+  align-self: center;  /* Center align */
+  display: flex;
+  flex-direction: column;  /* Stack logo on top, name below */
+  align-items: center;
+  gap: 4px;  /* ✅ Smaller gap (was 12px) - closer to logo */
+  padding: 0;
+  margin-bottom: 20px;  /* Space between header and bench */
+  color: #fff;
+  width: fit-content;
+}
+
+.team-logo {
+  max-width: 200px;   /* ✅ Max width (not fixed) */
+  max-height: 200px;  /* ✅ Max height (not fixed) */
+  width: auto;        /* ✅ Auto width to preserve ratio */
+  height: auto;       /* ✅ Auto height to preserve ratio */
+  border-radius: 12px;
+  border: none;
+  object-fit: contain;
+  background: transparent;
+  padding: 6px;
+}
+
+.team-name {
+  font-size: 20px;  /* ✅ Larger (was 20px) */
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
+}
+/* ========================================
+   MOBILE RESPONSIVE
+   Applied only on screens < 1024px
+   Desktop (≥1024px) unaffected
+   ======================================== */
+
+@media (max-width: 1023px) {
+  
+  /* ==================
+     LAYOUT - Tab Based
+     ================== */
+  
+  body {
+    overflow-x: hidden;
+  }
+  
+  .container {
+    flex-direction: column;
+    height: auto;
+  }
+  
+  /* Hide desktop sidebars */
+  .sidebar {
+    display: none;
+  }
+  
+  .player-panel {
+    display: none;
+  }
+  
+  /* Main content full width */
+  .main-content {
+    width: 100%;
+    padding: 10px;
+    gap: 20px;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  /* ==================
+     MOBILE NAVIGATION
+     ================== */
+  
+  .mobile-header {
+    display: flex;
+    flex-direction: column;
+    padding: 12px;
+    background: #222;
+    border-bottom: 2px solid #333;
+  }
+  
+  .mobile-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #fff;
+    margin-bottom: 12px;
+    text-align: center;
+  }
+  
+  .mobile-tabs {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+  }
+  
+  .mobile-tab {
+    flex: 1;
+    padding: 10px;
+    background: #333;
+    border: none;
+    border-radius: 6px;
+    color: #aaa;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  
+  .mobile-tab.active {
+    background: #00a651;
+    color: #fff;
+  }
+  
+  .mobile-tab-content {
+    display: none;
+    width: 100%;
+    padding: 16px 0;
+  }
+  
+  .mobile-tab-content.active {
+    display: block;
+  }
+  
+  /* ==================
+     PITCH - Scaled Down
+     ================== */
+  
+  .pitch-area {
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+    display: flex;
+    align-items: center; /* Center horizontally */
+    justify-content: center;
+  }
+  
+  .pitch {
+    width: 100%;
+    max-width: 360px;
+    height: 540px;
+    position: relative;
+    margin: 0 auto;
+  }
+  
+  /* Scale players to fit smaller pitch */
+  .player {
+    width: 50px;
+    height: 50px;
+    font-size: 10px;
+  }
+  
+  .player-number {
+    font-size: 16px;
+  }
+  
+  .player-role {
+    font-size: 10px;
+  }
+  
+  .player-name {
+    font-size: 13px;
+    max-width: 80px;
+  }
+  
+  .player-avatar {
+    width: 50px;
+    height: 50px;
+  }
+  
+  /* ==================
+     BENCH - Horizontal Scroll
+     ================== */
+  
+  .bench-container {
+    width: 100%;
+    max-width: 360px;
+    margin: 0 auto;
+  }
+  
+  .bench-title {
+    font-size: 12px;
+    text-align: center;
+  }
+  
+  .bench-zone {
+    display: flex;
+    flex-direction: row;
+    overflow-x: auto;
+    gap: 12px;
+    padding: 12px;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .bench-player {
+    min-width: 80px;
+    flex-shrink: 0;
+  }
+  
+  /* ==================
+     TEAM HEADER (Mobile)
+     ================== */
+  
+  .team-header {
+    margin-bottom: 16px;
+    gap: 12px;
+  }
+  
+  .team-logo {
+    max-width: 60px;
+    max-height: 60px;
+  }
+  
+  .team-name {
+    font-size: 16px;
+  }
+  
+  /* ==================
+     MOBILE CONTROLS
+     ================== */
+  
+  .mobile-formation-bar {
+    display: flex;
+    gap: 8px;
+    padding: 12px;
+    background: #2a2a2a;
+    border-radius: 8px;
+    margin-bottom: 12px;
+  }
+  
+  .mobile-formation-bar select,
+  .mobile-formation-bar button {
+    padding: 8px 12px;
+    font-size: 13px;
+    border-radius: 6px;
+    border: 1px solid #444;
+    background: #333;
+    color: #fff;
+  }
+  
+  .mobile-formation-bar select {
+    flex: 1;
+  }
+  
+  /* ==================
+     FLOATING ACTION BUTTONS
+     ================== */
+  
+  .mobile-fab-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    z-index: 1000;
+  }
+  
+  .mobile-fab {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: #00a651;
+    color: #fff;
+    border: none;
+    font-size: 24px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .mobile-fab.secondary {
+    width: 48px;
+    height: 48px;
+    background: #666;
+    font-size: 20px;
+  }
+  
+  /* ==================
+     BOTTOM SHEET (Edit Panel)
+     ================== */
+  
+  .mobile-bottom-sheet {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #2a2a2a;
+    border-radius: 16px 16px 0 0;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
+    z-index: 2000;
+    transform: translateY(100%);
+    transition: transform 0.3s ease;
+    max-height: 70vh;
+    overflow-y: auto;
+  }
+  
+  .mobile-bottom-sheet.active {
+    transform: translateY(0);
+  }
+  
+  .mobile-sheet-header {
+    padding: 16px;
+    border-bottom: 1px solid #333;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .mobile-sheet-drag-handle {
+    width: 40px;
+    height: 4px;
+    background: #555;
+    border-radius: 2px;
+    margin: 8px auto;
+  }
+  
+  .mobile-sheet-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #fff;
+  }
+  
+  .mobile-sheet-close {
+    background: none;
+    border: none;
+    color: #aaa;
+    font-size: 24px;
+    cursor: pointer;
+  }
+  
+  .mobile-sheet-content {
+    padding: 20px;
+  }
+  
+  .mobile-sheet-content .panel {
+    background: transparent;
+    border: none;
+    padding: 0;
+    margin-bottom: 20px;
+  }
+  
+  .mobile-sheet-content input,
+  .mobile-sheet-content select {
+    font-size: 16px;
+    padding: 12px;
+  }
+  
+  .mobile-sheet-content button {
+    padding: 12px;
+    font-size: 16px;
+  }
+  
+  /* ==================
+     SQUAD LIST (Mobile)
+     ================== */
+  
+  .squad-list {
+    max-height: none;
+  }
+  
+  .squad-player-item {
+    padding: 12px;
+    margin-bottom: 8px;
+  }
+  
+  .squad-player-avatar {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .squad-player-info {
+    font-size: 14px;
+  }
+  
+  /* ==================
+     HIDE COMPLEX FEATURES
+     ================== */
+  
+  /* Hide direction controls */
+  .move-grid {
+    display: none;
+  }
+  
+  /* Hide custom color */
+  #useCustomColor {
+    display: none;
+  }
+  
+  #playerCustomColor {
+    display: none;
+  }
+  
+  /* Simplify avatar controls */
+  .avatar-crop-modal canvas {
+    max-width: 90vw !important;
+    max-height: 50vh !important;
+  }
+  
+  /* ==================
+     ZOOM/PAN DISABLED
+     ================== */
+  
+  .pitch {
+    touch-action: none;
+    user-select: none;
+  }
+  
+  /* ==================
+     BETTER TOUCH TARGETS
+     ================== */
+  
+  button,
+  select,
+  input[type="checkbox"],
+  .player,
+  .bench-player,
+  .squad-player-item {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* ==================
+   MOBILE FORMATION CONTROLS
+   ================== */
+
+@media (max-width: 1023px) {
+  /* Formation bar at top of pitch */
+  .mobile-formation-controls {
+    display: flex;
+    gap: 8px;
+    padding: 12px;
+    background: #2a2a2a;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    align-items: center;
+  }
+  
+  .mobile-formation-controls select {
+    flex: 1;
+    padding: 10px 12px;
+    font-size: 14px;
+    border-radius: 6px;
+    border: 1px solid #444;
+    background: #333;
+    color: #fff;
+    min-height: 44px;
+  }
+  
+  .mobile-formation-controls button {
+    padding: 10px 16px;
+    font-size: 14px;
+    border-radius: 6px;
+    border: 1px solid #444;
+    background: #00a651;
+    color: #fff;
+    font-weight: 600;
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  .mobile-formation-controls button:active {
+    background: #008a42;
+  }
+  
+  /* Toggle buttons */
+  .mobile-toggle-group {
+    display: flex;
+    gap: 8px;
+    padding: 12px;
+    background: #2a2a2a;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  
+  .mobile-toggle-btn {
+    flex: 1;
+    min-width: 100px;
+    padding: 10px;
+    font-size: 13px;
+    border-radius: 6px;
+    border: 1px solid #444;
+    background: #333;
+    color: #aaa;
+    cursor: pointer;
+    transition: all 0.2s;
+    min-height: 44px;
+  }
+  
+  .mobile-toggle-btn.active {
+    background: #00a651;
+    color: #fff;
+    border-color: #00a651;
+  }
+  
+  .mobile-toggle-btn:active {
+    transform: scale(0.95);
+  }
+}
+
+/* ==================
+   MOBILE ANIMATIONS & TRANSITIONS
+   ================== */
+
+@media (max-width: 1023px) {
+  /* Smooth tab transitions */
+  .main-content,
+  .sidebar {
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+  
+  /* Button press feedback */
+  button:active,
+  .mobile-tab:active,
+  .mobile-fab:active {
+    transform: scale(0.95);
+  }
+  
+  /* Player selection feedback */
+  .player.selected {
+    animation: pulse 0.5s ease;
+  }
+  
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+  }
+  
+  /* Bottom sheet slide animation */
+  .mobile-bottom-sheet {
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  /* Smooth scrolling */
+  .bench-zone,
+  .squad-list,
+  .mobile-bottom-sheet {
+    scroll-behavior: smooth;
+  }
+  
+  /* Loading spinner for long operations */
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+  
+  .loading::after {
+    content: '';
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid #fff;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+    margin-left: 8px;
+  }
+}
+
+/* ==================
+   MOBILE TOAST NOTIFICATIONS
+   ================== */
+
+@media (max-width: 1023px) {
+  @keyframes slideUp {
+    from {
+      transform: translate(-50%, 20px);
+      opacity: 0;
+    }
+    to {
+      transform: translate(-50%, 0);
+      opacity: 1;
+    }
+  }
+  
+  @keyframes slideDown {
+    from {
+      transform: translate(-50%, 0);
+      opacity: 1;
+    }
+    to {
+      transform: translate(-50%, 20px);
+      opacity: 0;
+    }
+  }
+  
+  .mobile-toast {
+    pointer-events: none;
+  }
+  
+  .toast-icon {
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  
+  .toast-message {
+    line-height: 1.4;
+  }
+}
+
+/* ==================
+   ACCESSIBILITY
+   ================== */
+
+/* Skip link - only on mobile */
+.skip-link {
+  display: none;
+}
+
+@media (max-width: 1023px) {
+  /* Skip to content link */
+  .skip-link {
+    display: block;
+    position: fixed;
+    top: -100px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #00a651;
+    color: #fff;
+    padding: 12px 20px;
+    border-radius: 8px;
+    z-index: 99999;
+    transition: top 0.3s;
+  }
+  
+  .skip-link:focus {
+    top: 10px;
+  }
+  
+  /* Hide on desktop */
+  @media (min-width: 1024px) {
+    .skip-link {
+      display: none;
+    }
+  }
+  
+  /* Screen reader only text */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+  
+  /* High contrast mode support */
+  @media (prefers-contrast: high) {
+    .mobile-tab,
+    .mobile-fab,
+    button {
+      border: 2px solid currentColor;
+    }
+  }
+  
+  /* Reduced motion support */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+/* ==================
+   SKIP LINK - DESKTOP FIX
+   ================== */
+
+/* Hide skip link on desktop */
+@media (min-width: 1024px) {
+  .skip-link {
+    display: none;
+  }
+}
+
+/* Only show on mobile when focused */
+@media (max-width: 1023px) {
+  .skip-link {
+    position: fixed;
+    top: -100px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #00a651;
+    color: #fff;
+    padding: 12px 20px;
+    border-radius: 8px;
+    z-index: 99999;
+    transition: top 0.3s;
+    text-decoration: none;
+  }
+  
+  .skip-link:focus {
+    top: 10px;
+  }
+}
+
+/* ==================
+   DESKTOP - HIDE MOBILE ELEMENTS
+   ================== */
+
+@media (min-width: 1024px) {
+  /* Hide skip link on desktop */
+  .skip-link {
+    display: none;
+  }
+  
+  /* Hide all mobile-only elements on desktop */
+  .mobile-header,
+  .mobile-fab-container,
+  .mobile-formation-controls,
+  .mobile-toggle-group,
+  .mobile-bottom-sheet {
+    display: none !important;
+  }
+}
+
+/* ==================
+   DESKTOP - HIDE MOBILE ELEMENTS
+   ================== */
+
+@media (min-width: 1024px) {
+  /* Hide mobile-only elements on desktop */
+  .mobile-header,
+  .mobile-fab-container,
+  .mobile-formation-controls,
+  .mobile-toggle-group,
+  .mobile-bottom-sheet,
+  .skip-link {
+    display: none !important;
+  }
+}
+
+/* ==================
+   SKIP LINK (All Screens)
+   ================== */
+
+.skip-link {
+  position: fixed;
+  top: -100px;
+  left: 20px;
+  background: #00a651;
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 4px;
+  z-index: 99999;
+  transition: top 0.3s;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.skip-link:focus {
+  top: 10px;
+}
+
+/* Hide skip link on desktop */
+@media (min-width: 1024px) {
+  .skip-link {
+    display: none !important;
+  }
+}
+
+/* ==================
+   MOBILE - PREVENT TEXT SELECTION
+   ================== */
+
+@media (max-width: 1023px) {
+  /* Prevent text selection on pitch */
+  .pitch,
+  .pitch * {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+  }
+  
+  /* Keep player name fixed during drag */
+  .player.dragging .player-name {
+    position: fixed !important;
+    pointer-events: none;
+  }
+  
+  /* Player being dragged */
+  .player.dragging {
+    z-index: 1000;
+    cursor: grabbing;
+  }
+}
+
+/* ==================
+   MOBILE - PLAYER NAME FIXED DURING DRAG
+   ================== */
+
+@media (max-width: 1023px) {
+  /* Absolute positioning for player name to stay in place */
+  .player-name {
+    position: absolute !important;
+    pointer-events: none;
+  }
+  
+  /* When dragging, calculate offset to keep name in original spot */
+  .player.dragging {
+    will-change: transform;
+  }
+}
+
+/* Fix pitch centering on mobile */
+@media (max-width: 1023px) {
+  .main-content {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    padding: 10px 0 !important;
+  }
+  
+  .pitch {
+    margin: 0 auto !important;
+  }
+}
+
+/* CRITICAL: Fix player name to not move during drag */
+@media (max-width: 1023px) {
+  .player-name {
+    position: fixed !important;
+    pointer-events: none !important;
+    transform: none !important;
+  }
+  
+  /* Alternative: Hide name during drag */
+  .player.dragging .player-name {
+    opacity: 0 !important;
+  }
+}
+
+/* ==================
+   MOBILE - ENABLE SCROLL EVERYWHERE
+   ================== */
+
+@media (max-width: 1023px) {
+  /* Allow scroll on body */
+  body {
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y !important; /* Allow vertical scroll */
+  }
+  
+  /* Allow scroll on main content */
+  .main-content {
+    overflow-y: visible !important;
+    touch-action: pan-y !important;
+  }
+  
+  /* Allow scroll on container */
+  .container {
+    overflow-y: auto !important;
+    touch-action: pan-y !important;
+  }
+  
+  /* Disable touch-action only on players when dragging */
+  .player.dragging {
+    touch-action: none !important;
+  }
+  
+  /* Normal players allow scroll */
+  .player {
+    touch-action: auto !important;
+  }
+}
+
+/* ==================
+   MOBILE - FIX FLIP BUTTON SIZE
+   ================== */
+
+@media (max-width: 1023px) {
+  #mobileFlipBtn {
+    min-width: 44px !important;
+    width: 44px !important;
+    padding: 10px !important;
+    font-size: 18px !important;
+    flex-shrink: 0;
+  }
+}
+
+/* ==================
+   MOBILE - ENSURE SCROLLABLE CONTENT
+   ================== */
+
+@media (max-width: 1023px) {
+  /* Ensure body has scrollable height */
+  body {
+    min-height: 100vh;
+    height: auto !important;
+  }
+  
+  /* Main content should allow overflow */
+  .main-content {
+    min-height: calc(100vh - 120px); /* Account for header */
+    padding-bottom: 100px !important; /* Space at bottom */
+  }
+  
+  /* Add padding at top for mobile header */
+  .container {
+    padding-top: 60px; /* Space for mobile header */
+  }
+}
+
+/* ==================
+   MOBILE - ALLOW SCROLL ON PITCH
+   ================== */
+
+@media (max-width: 1023px) {
+  /* Remove user-select: none from pitch - it was blocking scroll! */
+  .pitch,
+  .pitch * {
+    user-select: auto !important;
+    -webkit-user-select: auto !important;
+  }
+  
+  /* Only prevent selection on player elements */
+  .player,
+  .player * {
+    user-select: none !important;
+    -webkit-user-select: none !important;
+    -webkit-touch-callout: none !important;
+  }
+  
+  /* Pitch should allow touch scroll */
+  .pitch {
+    touch-action: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* ==================
+   MOBILE - FORCE SCROLL EVERYWHERE
+   ================== */
+
+@media (max-width: 1023px) {
+  /* FORCE scroll on everything */
+  body,
+  .container,
+  .main-content,
+  .pitch-area,
+  .pitch,
+  .pitch * {
+    touch-action: pan-y pan-x !important;
+    -webkit-overflow-scrolling: touch !important;
+    overflow: visible !important;
+  }
+  
+  /* Only block scroll when actively dragging player */
+  .player.dragging {
+    touch-action: none !important;
+  }
+  
+  /* Normal players - allow scroll even when touching them */
+  .player:not(.dragging) {
+    touch-action: auto !important;
+  }
+}
+
+/* ==================
+   MOBILE - PERFECT PITCH CENTERING
+   ================== */
+
+@media (max-width: 1023px) {
+  .main-content {
+    padding: 10px 0 !important; /* Remove horizontal padding */
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+  }
+  
+  .pitch-area {
+    padding: 0 !important;
+    margin: 0 auto !important;
+  }
+  
+  .pitch {
+    margin: 0 auto !important;
+    left: 0 !important;
+    right: 0 !important;
+  }
+}
+/* ==================
+   MOBILE - FIX PLAYER NAMES DISPLAY
+   ================== */
+
+@media (max-width: 1023px) {
+  /* Player name is a SIBLING, not child! */
+  .player-name {
+    position: absolute !important;
+    /* Position relative to wrapper, same as player */
+    bottom: auto !important;
+    top: 50px !important; /* Below 50px player */
+    left: 0 !important;
+    transform: translateX(0) !important;
+    margin-left: 0 !important;
+    pointer-events: none !important;
+    display: inline-block !important;
+    opacity: 1 !important;
+    font-size: 13px !important;
+    color: #fff !important;
+    text-align: center !important;
+    white-space: nowrap !important;
+    width: 50px !important; /* Same as player width */
+  }
+}
+
+/* ==================
+   MOBILE - OVERRIDE FIXED POSITION ON DRAG
+   ================== */
+
+@media (max-width: 1023px) {
+  /* Remove this - name positioning handled above */
+}
+
+/* ==================
+   MOBILE - SHOW NAME DURING DRAG & ADJUST POSITION
+   ================== */
+
+@media (max-width: 1023px) {
+  /* Keep name visible when dragging */
+  .player.dragging .player-name {
+    opacity: 1 !important;
+    display: inline-block !important;
+  }
+  
+  /* Move name lower - increase from 120% to 130% */
+  .player-name {
+    top: 130% !important; /* Was 120%, now 130% = further down */
+    margin-top: 4px !important;
+  }
+}
+
+/* ==================
+   MOBILE - FORCE HIDE PITCH IN SQUAD TAB
+   ================== */
+
+@media (max-width: 1023px) {
+  /* When Squad tab is active, ensure pitch/bench are hidden */
+  body:has(.mobile-tab[data-mobile-tab="squad"].active) .main-content {
+    display: none !important;
+  }
+  
+  body:has(.mobile-tab[data-mobile-tab="squad"].active) .pitch-area {
+    display: none !important;
+  }
+  
+  body:has(.mobile-tab[data-mobile-tab="squad"].active) .bench-container {
+    display: none !important;
+  }
+  
+  /* When Formation tab is active, show pitch/bench */
+  body:has(.mobile-tab[data-mobile-tab="formation"].active) .main-content {
+    display: flex !important;
+  }
+}
+
+/* ==================
+   MOBILE - ADJUST SELECTOR WIDTHS
+   ================== */
+
+@media (max-width: 1023px) {
+  /* Player count selector: increase by 20% */
+  #mobilePlayerCount {
+    flex: 1.2 !important; /* Was 1, now 1.2 = 20% wider */
+    min-width: 120px !important;
+  }
+  
+  /* Formation selector: decrease by 10% */
+  #mobileFormationSelect {
+    flex: 0.9 !important; /* Was 1, now 0.9 = 10% narrower */
+  }
+}
+
+/* ==================
+   MOBILE - SMALLER DELETE ICON ON BENCH
+   ================== */
+
+@media (max-width: 1023px) {
+  .bench-delete-btn {
+    width: 16px !important;   /* 50% of 32px */
+    height: 16px !important;
+    font-size: 10px !important;
+    min-width: 16px !important;
+    line-height: 16px !important;
+  }
+}
+
+/* ==================
+   MOBILE - PREVENT TEXT SELECTION ON BENCH
+   ================== */
+
+@media (max-width: 1023px) {
+  .bench-container,
+  .bench-player,
+  .bench-player * {
+    user-select: none !important;
+    -webkit-user-select: none !important;
+    -webkit-touch-callout: none !important;
+  }
+}
+
+/* ==================
+   MOBILE - HIDE TOGGLE BUTTONS
+   ================== */
+
+@media (max-width: 1023px) {
+  .mobile-toggle-btn,
+  .mobile-toggle-group,
+  .mobile-formation-toggles {
+    display: none !important;
+  }
+}

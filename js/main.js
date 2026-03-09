@@ -707,58 +707,65 @@ function renderBenchWithCallbacks() {
         console.log('🎯 Dragging:', player.name);
       },
       onSwap: (benchPlayer, lineupPlayer) => {
-       // alert('🔄 SWAP CALLED!'); // Debug
-        
-        // 🆕 SAVE ALL current player data INCLUDING custom positions
-        const playerDataMap = new Map();
-        state.lineup.forEach(p => {
-          playerDataMap.set(p.number, {
-            x: p.x,
-            y: p.y,
-            wrap: p.wrap,
-            el: p.el,
-            nameEl: p.nameEl,
-            numberEl: p.numberEl,
-            roleEl: p.roleEl
+        try {
+          // 🔑 Save positions from DOM elements (where mobile drag updates!)
+          const positionBackup = new Map();
+          
+          // Get ALL player elements on pitch
+          const playerElements = document.querySelectorAll('.pitch-area .player');
+          
+          playerElements.forEach(playerEl => {
+            if (playerEl._player) {
+              const p = playerEl._player;
+              if (p.x !== undefined && p.y !== undefined) {
+                positionBackup.set(p.number, { x: p.x, y: p.y });
+              }
+            }
           });
-        });
-        
-        console.log('💾 Saved player data for', playerDataMap.size, 'players');
-        alert(`💾 Saved: ${playerDataMap.size} players`); // Debug
-        
-        // Perform swap
-        //swapPlayers(benchPlayer, lineupPlayer);
-        const benchPlayerInSquad = state.squad.find(p => p.number === benchPlayer.number);
-        const lineupPlayerInSquad = state.squad.find(p => p.number === lineupPlayer.number);
-        swapPlayers(benchPlayerInSquad, lineupPlayerInSquad);
-        
-        // Update state arrays
-        const newLineup = state.squad.filter(p => p.location === 'lineup')
-          .sort((a, b) => a.slotIndex - b.slotIndex);
-        const newBench = state.squad.filter(p => p.location === 'bench');
-        
-        // 🆕 RESTORE custom positions and DOM refs to NEW player objects
-        let restoredCount = 0;
-        newLineup.forEach(p => {
-          if (playerDataMap.has(p.number)) {
-            const saved = playerDataMap.get(p.number);
-            p.x = saved.x;
-            p.y = saved.y;
-            restoredCount++;
-            console.log('📌 Restored position for', p.name, '@', p.x, p.y);
+          
+          alert(`💾 SAVED ${positionBackup.size} from DOM`);
+          
+          // Find in state.squad
+          const benchPlayerInSquad = state.squad.find(p => p.number === benchPlayer.number);
+          const lineupPlayerInSquad = state.squad.find(p => p.number === lineupPlayer.number);
+          
+          if (!benchPlayerInSquad || !lineupPlayerInSquad) {
+            throw new Error('Player not found in squad!');
           }
-        });
-        
-        alert(`📌 Restored: ${restoredCount} players`); // Debug
-        
-        // Update state
-        state.lineup = newLineup;
-        state.bench = newBench;
-        state.players = state.lineup;
-        
-        console.log('✅ Swapped:', benchPlayer.name, '↔', lineupPlayer.name);
-        
-        renderLineup();
+          
+          // Swap
+          swapPlayers(benchPlayerInSquad, lineupPlayerInSquad);
+          
+          // Update state arrays
+          const newLineup = state.squad.filter(p => p.location === 'lineup')
+            .sort((a, b) => a.slotIndex - b.slotIndex);
+          const newBench = state.squad.filter(p => p.location === 'bench');
+          
+          // RESTORE positions
+          let restoredCount = 0;
+          newLineup.forEach(p => {
+            if (positionBackup.has(p.number)) {
+              const backup = positionBackup.get(p.number);
+              p.x = backup.x;
+              p.y = backup.y;
+              restoredCount++;
+            }
+          });
+          
+          alert(`📌 RESTORED ${restoredCount}`);
+          
+          // Update state
+          state.lineup = newLineup;
+          state.bench = newBench;
+          state.players = state.lineup;
+          
+          // Render
+          renderLineup();
+          
+        } catch (error) {
+          alert('Swap error: ' + error.message);
+          console.error('Swap error:', error);
+        }
       }
     });
     

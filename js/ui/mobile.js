@@ -1068,6 +1068,7 @@ function setupPlayerTouch(player) {
     }
     
     // If long press active, start dragging
+    // If long press active, start dragging
     if (isLongPress && (deltaX > 5 || deltaY > 5)) {
       isDragging = true;
       player.classList.add('dragging');
@@ -1076,16 +1077,16 @@ function setupPlayerTouch(player) {
       e.preventDefault();
       e.stopPropagation();
       
-      // Move player - simple pixel positioning
+      // Move player
       const wrapper = player.parentElement;
       const pitch = wrapper.parentElement; // .pitch-area
       const pitchRect = pitch.getBoundingClientRect();
       
-      // Calculate position in pixels relative to pitch
+      // Calculate position in pixels
       let x = touch.clientX - pitchRect.left - (player.offsetWidth / 2);
       let y = touch.clientY - pitchRect.top - (player.offsetHeight / 2);
       
-      // Clamp to pitch boundaries
+      // Clamp to boundaries
       const minX = 0;
       const minY = 0;
       const maxX = pitchRect.width - player.offsetWidth;
@@ -1094,26 +1095,25 @@ function setupPlayerTouch(player) {
       x = Math.max(minX, Math.min(maxX, x));
       y = Math.max(minY, Math.min(maxY, y));
       
-      // 🔑 CRITICAL: Convert pixels to percentage and UPDATE PLAYER DATA!
+      // Convert to percentage
       const xPercent = (x / pitchRect.width) * 100;
       const yPercent = (y / pitchRect.height) * 100;
       
-      
-      // Update player data object (this is what gets saved!)
-      if (player._player) {
-        player._player.x = xPercent;
-        player._player.y = yPercent;
-        
-        // 🔑 CRITICAL: Also update in state.players!
-        if (window.state && window.state.players) {
-          const playerInState = window.state.players.find(p => p.number === player._player.number);
-          if (playerInState) {
-            playerInState.x = xPercent;
-            playerInState.y = yPercent;
-          }
+      // 🔑 CRITICAL: Update in state.players (same as desktop!)
+      if (window.state && window.state.players && player._player) {
+        const playerInState = window.state.players.find(p => p.number === player._player.number);
+        if (playerInState) {
+          playerInState.x = xPercent;
+          playerInState.y = yPercent;
         }
-        
-        // 🔍 DEBUG
+      }
+      
+      // Update wrapper visual (use percentage like desktop!)
+      const isMobile = window.innerWidth < 1024;
+      const offset = isMobile ? 25 : 30;
+      wrapper.style.left = `calc(${xPercent}% - ${offset}px)`;
+      wrapper.style.top = `calc(${yPercent}% - ${offset}px)`;
+    }
         console.log(`📍 Drag #${player._player.number}: ${xPercent.toFixed(1)}, ${yPercent.toFixed(1)}`);
       }
       

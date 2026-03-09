@@ -1073,20 +1073,16 @@ function setupPlayerTouch(player) {
       isDragging = true;
       player.classList.add('dragging');
       
-      // PREVENT SCROLL when dragging
       e.preventDefault();
       e.stopPropagation();
       
-      // Move player
       const wrapper = player.parentElement;
-      const pitch = wrapper.parentElement; // .pitch-area
+      const pitch = wrapper.parentElement;
       const pitchRect = pitch.getBoundingClientRect();
       
-      // Calculate position in pixels
       let x = touch.clientX - pitchRect.left - (player.offsetWidth / 2);
       let y = touch.clientY - pitchRect.top - (player.offsetHeight / 2);
       
-      // Clamp to boundaries
       const minX = 0;
       const minY = 0;
       const maxX = pitchRect.width - player.offsetWidth;
@@ -1095,11 +1091,9 @@ function setupPlayerTouch(player) {
       x = Math.max(minX, Math.min(maxX, x));
       y = Math.max(minY, Math.min(maxY, y));
       
-      // Convert to percentage
       const xPercent = (x / pitchRect.width) * 100;
       const yPercent = (y / pitchRect.height) * 100;
       
-      // 🔑 CRITICAL: Update in state.players (same as desktop!)
       if (window.state && window.state.players && player._player) {
         const playerInState = window.state.players.find(p => p.number === player._player.number);
         if (playerInState) {
@@ -1108,20 +1102,10 @@ function setupPlayerTouch(player) {
         }
       }
       
-      // Update wrapper visual (use percentage like desktop!)
       const isMobile = window.innerWidth < 1024;
       const offset = isMobile ? 25 : 30;
       wrapper.style.left = `calc(${xPercent}% - ${offset}px)`;
       wrapper.style.top = `calc(${yPercent}% - ${offset}px)`;
-    }
-        console.log(`📍 Drag #${player._player.number}: ${xPercent.toFixed(1)}, ${yPercent.toFixed(1)}`);
-      }
-      
-      // Update wrapper position directly in pixels (visual)
-      wrapper.style.left = `${x}px`;
-      wrapper.style.top = `${y}px`;
-      
-      // Name is now inside player element, so it moves automatically!
     }
   }, { passive: false }); // Must be non-passive to preventDefault
   

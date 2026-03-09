@@ -708,22 +708,18 @@ function renderBenchWithCallbacks() {
       },
       onSwap: (benchPlayer, lineupPlayer) => {
         try {
-          // 🔑 Save positions from DOM elements (where mobile drag updates!)
+          // 🔑 Save positions from state.players (updated by mobile drag!)
           const positionBackup = new Map();
           
-          // Get ALL player elements on pitch
-          const playerElements = document.querySelectorAll('.pitch-area .player');
-          
-          playerElements.forEach(playerEl => {
-            if (playerEl._player) {
-              const p = playerEl._player;
+          if (window.state && window.state.players) {
+            window.state.players.forEach(p => {
               if (p.x !== undefined && p.y !== undefined) {
                 positionBackup.set(p.number, { x: p.x, y: p.y });
               }
-            }
-          });
+            });
+          }
           
-          alert(`💾 SAVED ${positionBackup.size} from DOM`);
+          alert(`💾 SAVED ${positionBackup.size} from state`);
           
           // Find in state.squad
           const benchPlayerInSquad = state.squad.find(p => p.number === benchPlayer.number);

@@ -638,15 +638,17 @@ function renderBenchWithCallbacks() {
       // Save positions from state.lineup  
       const positionBackup = new Map();
       
-      let saveMsg = 'SAVED:\n';
       state.lineup.forEach(p => {
         if (p.x !== undefined && p.y !== undefined) {
           positionBackup.set(p.number, { x: p.x, y: p.y });
-          saveMsg += `#${p.number}:${p.x.toFixed(0)},${p.y.toFixed(0)} `;
         }
       });
       
-      alert(saveMsg);
+      // 🔍 Show what we saved for Player 7
+      const saved7 = positionBackup.get(7);
+      if (saved7) {
+        alert(`SAVE #7: ${saved7.x.toFixed(0)}, ${saved7.y.toFixed(0)}`);
+      }
       
       // Swap
       swapPlayers(benchPlayer, lineupPlayer);
@@ -657,19 +659,21 @@ function renderBenchWithCallbacks() {
       const newBench = state.squad.filter(p => p.location === 'bench');
       
       // RESTORE
-      let restoreMsg = 'RESTORED:\n';
       let restoredCount = 0;
       newLineup.forEach(p => {
         if (positionBackup.has(p.number)) {
           const backup = positionBackup.get(p.number);
-          restoreMsg += `#${p.number}:${backup.x.toFixed(0)},${backup.y.toFixed(0)} `;
           p.x = backup.x;
           p.y = backup.y;
           restoredCount++;
         }
       });
       
-      alert(restoreMsg);
+      // 🔍 Show what we restored for Player 7
+      const restored7 = newLineup.find(p => p.number === 7);
+      if (restored7) {
+        alert(`RESTORE #7: ${restored7.x.toFixed(0)}, ${restored7.y.toFixed(0)}`);
+      }
       
       // Update state
       state.lineup = newLineup;
@@ -682,11 +686,10 @@ function renderBenchWithCallbacks() {
       
       // Check after render
       setTimeout(() => {
-        let finalMsg = 'AFTER RENDER:\n';
-        state.lineup.forEach(p => {
-          finalMsg += `#${p.number}:${p.x.toFixed(0)},${p.y.toFixed(0)} `;
-        });
-        alert(finalMsg);
+        const final7 = state.lineup.find(p => p.number === 7);
+        if (final7) {
+          alert(`FINAL #7: ${final7.x.toFixed(0)}, ${final7.y.toFixed(0)}`);
+        }
       }, 100);
       
     } catch (error) {

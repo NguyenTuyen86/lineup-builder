@@ -583,6 +583,45 @@ function renderBenchWithCallbacks() {
     }
   });
   
+  // 🔍 GLOBAL HELPER for easy debugging
+  window.checkPositions = function() {
+    const d = window.DEBUG_POSITIONS;
+    if (!d) {
+      alert('No debug data yet. Do a swap first!');
+      return;
+    }
+    
+    let msg = '';
+    
+    // Check player 5 as example
+    if (d.beforeSave[5]) {
+      msg += `Player 5:\n`;
+      msg += `BEFORE: ${d.beforeSave[5].x.toFixed(0)}, ${d.beforeSave[5].y.toFixed(0)}\n`;
+      if (d.afterRestore[5]) {
+        msg += `AFTER RESTORE: ${d.afterRestore[5].x.toFixed(0)}, ${d.afterRestore[5].y.toFixed(0)}\n`;
+      }
+      if (d.afterRender[5]) {
+        msg += `AFTER RENDER: ${d.afterRender[5].x.toFixed(0)}, ${d.afterRender[5].y.toFixed(0)}\n`;
+      }
+    } else {
+      msg = 'Player 5 not in lineup\n\n';
+    }
+    
+    // Check player 7
+    if (d.beforeSave[7]) {
+      msg += `\nPlayer 7:\n`;
+      msg += `BEFORE: ${d.beforeSave[7].x.toFixed(0)}, ${d.beforeSave[7].y.toFixed(0)}\n`;
+      if (d.afterRestore[7]) {
+        msg += `AFTER RESTORE: ${d.afterRestore[7].x.toFixed(0)}, ${d.afterRestore[7].y.toFixed(0)}\n`;
+      }
+      if (d.afterRender[7]) {
+        msg += `AFTER RENDER: ${d.afterRender[7].x.toFixed(0)}, ${d.afterRender[7].y.toFixed(0)}\n`;
+      }
+    }
+    
+    alert(msg);
+  };
+  
   // 🆕 MOBILE SWAP HANDLER (called from mobile.js)
   window.mobileSwapHandler = (benchPlayerRef, lineupPlayerRef) => {
     try {
@@ -599,19 +638,15 @@ function renderBenchWithCallbacks() {
       // Save positions from state.lineup  
       const positionBackup = new Map();
       
-      console.log('💾 SAVE:');
+      let saveMsg = 'SAVED:\n';
       state.lineup.forEach(p => {
         if (p.x !== undefined && p.y !== undefined) {
           positionBackup.set(p.number, { x: p.x, y: p.y });
-          console.log(`  #${p.number}: ${p.x.toFixed(1)}, ${p.y.toFixed(1)}`);
+          saveMsg += `#${p.number}:${p.x.toFixed(0)},${p.y.toFixed(0)} `;
         }
       });
       
-      // 🔍 ALERT CHECK: What did we save?
-      const player5 = positionBackup.get(5);
-      if (player5) {
-        alert(`SAVE #5: ${player5.x.toFixed(0)}, ${player5.y.toFixed(0)}`);
-      }
+      alert(saveMsg);
       
       // Swap
       swapPlayers(benchPlayer, lineupPlayer);
@@ -622,25 +657,19 @@ function renderBenchWithCallbacks() {
       const newBench = state.squad.filter(p => p.location === 'bench');
       
       // RESTORE
-      console.log('📌 RESTORE:');
+      let restoreMsg = 'RESTORED:\n';
       let restoredCount = 0;
       newLineup.forEach(p => {
         if (positionBackup.has(p.number)) {
           const backup = positionBackup.get(p.number);
-          console.log(`  #${p.number}: ${p.x?.toFixed(1)} -> ${backup.x.toFixed(1)}, ${p.y?.toFixed(1)} -> ${backup.y.toFixed(1)}`);
+          restoreMsg += `#${p.number}:${backup.x.toFixed(0)},${backup.y.toFixed(0)} `;
           p.x = backup.x;
           p.y = backup.y;
           restoredCount++;
         }
       });
       
-      console.log(`✅ Restored ${restoredCount} positions`);
-      
-      // 🔍 ALERT CHECK: What did we restore for player 5?
-      const newPlayer5 = newLineup.find(p => p.number === 5);
-      if (newPlayer5) {
-        alert(`RESTORE #5: ${newPlayer5.x.toFixed(0)}, ${newPlayer5.y.toFixed(0)}`);
-      }
+      alert(restoreMsg);
       
       // Update state
       state.lineup = newLineup;
@@ -653,16 +682,11 @@ function renderBenchWithCallbacks() {
       
       // Check after render
       setTimeout(() => {
-        console.log('🎨 AFTER RENDER:');
+        let finalMsg = 'AFTER RENDER:\n';
         state.lineup.forEach(p => {
-          console.log(`  #${p.number}: ${p.x.toFixed(1)}, ${p.y.toFixed(1)}`);
+          finalMsg += `#${p.number}:${p.x.toFixed(0)},${p.y.toFixed(0)} `;
         });
-        
-        // 🔍 FINAL CHECK
-        const finalPlayer5 = state.lineup.find(p => p.number === 5);
-        if (finalPlayer5) {
-          alert(`FINAL #5: ${finalPlayer5.x.toFixed(0)}, ${finalPlayer5.y.toFixed(0)}`);
-        }
+        alert(finalMsg);
       }, 100);
       
     } catch (error) {

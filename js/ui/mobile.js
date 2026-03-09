@@ -1116,6 +1116,11 @@ function setupPlayerTouch(player) {
     player.style.zIndex = '';
     player.classList.remove('dragging');
     
+    // 🆕 Clear selected class after drag
+    if (wasDragging) {
+      player.classList.remove('selected');
+    }
+    
     // Reset state
     isDragging = false;
     isLongPress = false;

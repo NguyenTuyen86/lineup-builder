@@ -1098,17 +1098,26 @@ function setupPlayerTouch(player) {
       const xPercent = (x / pitchRect.width) * 100;
       const yPercent = (y / pitchRect.height) * 100;
       
+      
       // Update player data object (this is what gets saved!)
       if (player._player) {
         player._player.x = xPercent;
         player._player.y = yPercent;
+        
+        // 🔑 CRITICAL: Also update in state.players!
+        if (window.state && window.state.players) {
+          const playerInState = window.state.players.find(p => p.number === player._player.number);
+          if (playerInState) {
+            playerInState.x = xPercent;
+            playerInState.y = yPercent;
+          }
+        }
         
         // 🔍 DEBUG
         console.log(`📍 Drag #${player._player.number}: ${xPercent.toFixed(1)}, ${yPercent.toFixed(1)}`);
       }
       
       // Update wrapper position directly in pixels (visual)
-      wrapper.style.left = `${x}px`;
       wrapper.style.top = `${y}px`;
       
       // Name is now inside player element, so it moves automatically!

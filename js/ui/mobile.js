@@ -1094,7 +1094,17 @@ function setupPlayerTouch(player) {
       x = Math.max(minX, Math.min(maxX, x));
       y = Math.max(minY, Math.min(maxY, y));
       
-      // Update wrapper position directly in pixels
+      // 🔑 CRITICAL: Convert pixels to percentage and UPDATE PLAYER DATA!
+      const xPercent = (x / pitchRect.width) * 100;
+      const yPercent = (y / pitchRect.height) * 100;
+      
+      // Update player data object (this is what gets saved!)
+      if (player._player) {
+        player._player.x = xPercent;
+        player._player.y = yPercent;
+      }
+      
+      // Update wrapper position directly in pixels (visual)
       wrapper.style.left = `${x}px`;
       wrapper.style.top = `${y}px`;
       

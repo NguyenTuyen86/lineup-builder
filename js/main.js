@@ -7,6 +7,11 @@
  */
 
 // ============================================
+// DEBUG (Mobile)
+// ============================================
+import { initDebugPanel, debugLog } from './debug-panel.js';
+
+// ============================================
 // IMPORTS
 // ============================================
 
@@ -305,6 +310,12 @@ const elements = {
 // ============================================
 
 function initializeApp() {
+  // 🐛 Init debug panel for mobile
+  if (window.innerWidth < 1024) {
+    initDebugPanel();
+    debugLog('🚀 App starting...');
+  }
+  
   // Initialize formation dropdown
   updateFormationDropdown();
   
@@ -586,23 +597,20 @@ function renderBenchWithCallbacks() {
   // 🆕 MOBILE SWAP HANDLER (called from mobile.js)
   window.mobileSwapHandler = (benchPlayerRef, lineupPlayerRef) => {
     try {
-      console.log('🔄 SWAP START');
-      console.log('  Refs:', benchPlayerRef.number, '↔', lineupPlayerRef.number);
+      console.log(`🔄 SWAP: #${benchPlayerRef.number} ↔ #${lineupPlayerRef.number}`);
       
-      // 🔑 CRITICAL: Find ACTUAL objects in state.squad (not DOM references!)
+      // Find ACTUAL objects in state.squad
       const benchPlayer = state.squad.find(p => p.number === benchPlayerRef.number);
       const lineupPlayer = state.squad.find(p => p.number === lineupPlayerRef.number);
       
       if (!benchPlayer || !lineupPlayer) {
-        throw new Error('Player not found in squad!');
+        throw new Error('Player not found!');
       }
       
-      console.log('  Found in squad:', benchPlayer.name, lineupPlayer.name);
-      
-      // 🔑 Save positions from CURRENT state.lineup  
+      // Save positions from state.lineup  
       const positionBackup = new Map();
       
-      console.log('📸 Snapshotting positions...');
+      console.log('💾 SAVE:');
       state.lineup.forEach(p => {
         if (p.x !== undefined && p.y !== undefined) {
           positionBackup.set(p.number, { x: p.x, y: p.y });
@@ -610,55 +618,49 @@ function renderBenchWithCallbacks() {
         }
       });
       
-      const savedCount = positionBackup.size;
-      console.log(`💾 Backed up ${savedCount} positions`);
-      
-      if (window.showToast) {
-        showToast(`💾 ${savedCount}`, 'info');
-      }
-      
-      console.log('⚙️ Swapping...');
-      // Swap using ACTUAL squad objects
+      // Swap
       swapPlayers(benchPlayer, lineupPlayer);
       
       // Update state arrays
-      console.log('🆕 Filtering new lineup...');
       const newLineup = state.squad.filter(p => p.location === 'lineup')
         .sort((a, b) => a.slotIndex - b.slotIndex);
       const newBench = state.squad.filter(p => p.location === 'bench');
       
-      // 🔑 RESTORE positions
+      // RESTORE
+      console.log('📌 RESTORE:');
       let restoredCount = 0;
-      console.log('📌 Restoring...');
       newLineup.forEach(p => {
         if (positionBackup.has(p.number)) {
           const backup = positionBackup.get(p.number);
+          console.log(`  #${p.number}: ${p.x?.toFixed(1)} -> ${backup.x.toFixed(1)}, ${p.y?.toFixed(1)} -> ${backup.y.toFixed(1)}`);
           p.x = backup.x;
           p.y = backup.y;
           restoredCount++;
-          console.log(`  ✅ #${p.number}: ${p.x.toFixed(1)}, ${p.y.toFixed(1)}`);
         }
       });
       
-      console.log(`📌 Restored ${restoredCount}`);
-      
-      if (window.showToast) {
-        showToast(`📌 ${restoredCount}`, 'success');
-      }
+      console.log(`✅ Restored ${restoredCount} positions`);
       
       // Update state
       state.lineup = newLineup;
       state.bench = newBench;
       state.players = state.lineup;
       
-      console.log('🎨 Rendering...');
+      // Render
       renderLineup();
       renderBenchWithCallbacks();
       
-      console.log('✅ Done');
+      // Check after render
+      setTimeout(() => {
+        console.log('🎨 AFTER RENDER:');
+        state.lineup.forEach(p => {
+          console.log(`  #${p.number}: ${p.x.toFixed(1)}, ${p.y.toFixed(1)}`);
+        });
+      }, 100);
+      
     } catch (error) {
-      alert('❌ ' + error.message);
-      console.error('Swap error:', error);
+      console.error('❌ Swap error:', error);
+      alert('Swap error: ' + error.message);
     }
   };
   

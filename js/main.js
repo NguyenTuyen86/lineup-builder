@@ -586,48 +586,46 @@ function renderBenchWithCallbacks() {
   // 🆕 MOBILE SWAP HANDLER (called from mobile.js)
   window.mobileSwapHandler = (benchPlayer, lineupPlayer) => {
     try {
-      // SAVE custom positions BEFORE swap
-      const playerDataMap = new Map();
+      // 🔑 KEY: Save positions BEFORE swapPlayers (which will overwrite them!)
+      const positionBackup = new Map();
+      
+      // Save ALL lineup players' current positions
       state.lineup.forEach(p => {
-        // Save ALL positions (even if not custom yet)
         if (p.x !== undefined && p.y !== undefined) {
-          playerDataMap.set(p.number, {
-            x: p.x,
-            y: p.y
-          });
-          console.log(`💾 Save: #${p.number} @ ${p.x.toFixed(1)}, ${p.y.toFixed(1)}`);
+          positionBackup.set(p.number, { x: p.x, y: p.y });
+          console.log(`💾 Backup: #${p.number} @ ${p.x.toFixed(1)}, ${p.y.toFixed(1)}`);
         }
       });
       
-      const savedCount = playerDataMap.size;
-      console.log(`💾 Saved ${savedCount} positions`);
+      const savedCount = positionBackup.size;
+      console.log(`💾 Backed up ${savedCount} positions`);
       
       // Show toast
       if (window.showToast) {
-        showToast(`💾 ${savedCount} positions`, 'info');
+        showToast(`💾 ${savedCount} pos`, 'info');
       }
       
-      // Perform swap
+      // Perform swap (THIS WILL OVERWRITE benchPlayer.x/y and lineupPlayer.x/y!)
       swapPlayers(benchPlayer, lineupPlayer);
       
-      // Update state arrays
+      // Update state arrays (creates NEW player objects from squad!)
       const newLineup = state.squad.filter(p => p.location === 'lineup')
         .sort((a, b) => a.slotIndex - b.slotIndex);
       const newBench = state.squad.filter(p => p.location === 'bench');
       
-      // RESTORE custom positions to NEW objects
+      // 🔑 RESTORE positions from backup to NEW lineup objects
       let restoredCount = 0;
       newLineup.forEach(p => {
-        if (playerDataMap.has(p.number)) {
-          const saved = playerDataMap.get(p.number);
-          p.x = saved.x;
-          p.y = saved.y;
+        if (positionBackup.has(p.number)) {
+          const backup = positionBackup.get(p.number);
+          p.x = backup.x;
+          p.y = backup.y;
           restoredCount++;
-          console.log(`📌 Restore: #${p.number} @ ${saved.x.toFixed(1)}, ${saved.y.toFixed(1)}`);
+          console.log(`📌 Restore: #${p.number} @ ${backup.x.toFixed(1)}, ${backup.y.toFixed(1)}`);
         }
       });
       
-      console.log(`📌 Restored ${restoredCount} positions`);
+      console.log(`📌 Restored ${restoredCount} positions to new lineup`);
       
       // Show toast
       if (window.showToast) {
@@ -639,7 +637,7 @@ function renderBenchWithCallbacks() {
       state.bench = newBench;
       state.players = state.lineup;
       
-      // Re-render
+      // Re-render (will use restored p.x, p.y)
       renderLineup();
       renderBenchWithCallbacks();
       

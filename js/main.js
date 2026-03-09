@@ -707,61 +707,36 @@ function renderBenchWithCallbacks() {
         console.log('🎯 Dragging:', player.name);
       },
       onSwap: (benchPlayer, lineupPlayer) => {
-        try {
-          // 🔑 Save positions from state.players (updated by mobile drag!)
-          const positionBackup = new Map();
-          
-          if (window.state && window.state.players) {
-            window.state.players.forEach(p => {
-              if (p.x !== undefined && p.y !== undefined) {
-                positionBackup.set(p.number, { x: p.x, y: p.y });
-              }
-            });
+        // Save positions (already in state.players from drag!)
+        const positionBackup = new Map();
+        state.players.forEach(p => {
+          if (p.x !== undefined && p.y !== undefined) {
+            positionBackup.set(p.number, { x: p.x, y: p.y });
           }
-          
-          alert(`💾 SAVED ${positionBackup.size} from state`);
-          
-          // Find in state.squad
-          const benchPlayerInSquad = state.squad.find(p => p.number === benchPlayer.number);
-          const lineupPlayerInSquad = state.squad.find(p => p.number === lineupPlayer.number);
-          
-          if (!benchPlayerInSquad || !lineupPlayerInSquad) {
-            throw new Error('Player not found in squad!');
+        });
+        
+        // Swap
+        swapPlayers(benchPlayer, lineupPlayer);
+        
+        // Update arrays
+        state.lineup = state.squad.filter(p => p.location === 'lineup')
+          .sort((a, b) => a.slotIndex - b.slotIndex);
+        state.bench = state.squad.filter(p => p.location === 'bench');
+        
+        // Restore positions
+        state.lineup.forEach(p => {
+          if (positionBackup.has(p.number)) {
+            const backup = positionBackup.get(p.number);
+            p.x = backup.x;
+            p.y = backup.y;
           }
-          
-          // Swap
-          swapPlayers(benchPlayerInSquad, lineupPlayerInSquad);
-          
-          // Update state arrays
-          const newLineup = state.squad.filter(p => p.location === 'lineup')
-            .sort((a, b) => a.slotIndex - b.slotIndex);
-          const newBench = state.squad.filter(p => p.location === 'bench');
-          
-          // RESTORE positions
-          let restoredCount = 0;
-          newLineup.forEach(p => {
-            if (positionBackup.has(p.number)) {
-              const backup = positionBackup.get(p.number);
-              p.x = backup.x;
-              p.y = backup.y;
-              restoredCount++;
-            }
-          });
-          
-          alert(`📌 RESTORED ${restoredCount}`);
-          
-          // Update state
-          state.lineup = newLineup;
-          state.bench = newBench;
-          state.players = state.lineup;
-          
-          // Render
-          renderLineup();
-          
-        } catch (error) {
-          alert('Swap error: ' + error.message);
-          console.error('Swap error:', error);
-        }
+        });
+        
+        // Update state
+        state.players = state.lineup;
+        
+        // Render
+        renderLineup();
       }
     });
     

@@ -711,13 +711,20 @@ function renderBenchWithCallbacks() {
         console.log('🎯 Dragging:', player.name);
       },
       onSwap: (benchPlayer, lineupPlayer) => {
+        console.log('=== SWAP START ===');
+        console.log('Bench:', benchPlayer.number, benchPlayer.name);
+        console.log('Lineup:', lineupPlayer.number, lineupPlayer.name);
+        
         // Save positions (already in state.players from drag!)
         const positionBackup = new Map();
         state.players.forEach(p => {
           if (p.x !== undefined && p.y !== undefined) {
             positionBackup.set(p.number, { x: p.x, y: p.y });
+            console.log(`💾 Save #${p.number}: ${p.x.toFixed(1)}, ${p.y.toFixed(1)}`);
           }
         });
+        
+        console.log(`💾 Total saved: ${positionBackup.size}`);
         
         // Swap
         swapPlayers(benchPlayer, lineupPlayer);
@@ -727,20 +734,40 @@ function renderBenchWithCallbacks() {
           .sort((a, b) => a.slotIndex - b.slotIndex);
         state.bench = state.squad.filter(p => p.location === 'bench');
         
+        console.log('📋 New lineup has', state.lineup.length, 'players');
+        
         // Restore positions
+        let restored = 0;
         state.lineup.forEach(p => {
           if (positionBackup.has(p.number)) {
             const backup = positionBackup.get(p.number);
+            console.log(`📌 Restore #${p.number}: ${p.x?.toFixed(1)} → ${backup.x.toFixed(1)}, ${p.y?.toFixed(1)} → ${backup.y.toFixed(1)}`);
             p.x = backup.x;
             p.y = backup.y;
+            restored++;
+          } else {
+            console.log(`⏭️ Skip #${p.number}: no backup (new to lineup)`);
           }
         });
+        
+        console.log(`📌 Total restored: ${restored}`);
         
         // Update state
         state.players = state.lineup;
         
+        console.log('🔄 state.players updated, count:', state.players.length);
+        
         // Render
+        console.log('🎨 Calling renderLineup...');
         renderLineup();
+        
+        // Check after render
+        setTimeout(() => {
+          console.log('=== AFTER RENDER ===');
+          state.players.forEach(p => {
+            console.log(`Final #${p.number}: ${p.x.toFixed(1)}, ${p.y.toFixed(1)}`);
+          });
+        }, 100);
       }
     });
     

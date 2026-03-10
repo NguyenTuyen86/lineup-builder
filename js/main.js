@@ -338,7 +338,10 @@ function initializeApp() {
   
   // 📱 Initialize mobile UI with error handling
   try {
-    if (window.innerWidth < 1024) {
+    // Better mobile detection (iPhone 14 Pro Max = 1179px width!)
+    const isMobile = window.innerWidth <= 1280 || /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    
+    if (isMobile) {
       console.log('📱 Mobile device detected, initializing mobile UI...');
       initMobileUI();
       setupMobileTouchHandlers();

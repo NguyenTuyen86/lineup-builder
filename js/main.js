@@ -448,6 +448,9 @@ function renderLineup() {
         player.nameEl = domElements.nameElement;
         player.roleEl = domElements.roleElement;
         
+        // 🔑 CRITICAL: Store player data reference on DOM element for mobile!
+        domElements.element._player = player;
+        
         // Track drag state to prevent click after drag
         let justDragged = false;
         

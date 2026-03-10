@@ -1678,9 +1678,14 @@ h2, h3, h4 {
      HIDE COMPLEX FEATURES
      ================== */
   
-  /* Hide direction controls */
+  /* Show direction controls on mobile */
   .move-grid {
-    display: none;
+    max-width: 150px !important; /* Smaller on mobile */
+  }
+  
+  .move-grid button {
+    padding: 8px !important; /* Smaller buttons */
+    font-size: 16px !important;
   }
   
   /* Hide custom color */
@@ -2388,6 +2393,8 @@ h2, h3, h4 {
 
 @media (max-width: 1023px) {
   .bench-delete-btn {
+    top: 2px !important;      /* Lower position (was 4px) */
+    right: 2px !important;
     width: 16px !important;   /* 50% of 32px */
     height: 16px !important;
     font-size: 10px !important;

@@ -176,6 +176,13 @@ import { exportAndDownloadPNG, generateExportFilename } from './io/export.js';
 
 import { exportRosterAsPNG } from './io/roster-export.js';
 
+// Input bindings
+import { 
+  bindNumberInput,
+  bindNameInput,
+  bindRoleSelect
+} from './ui/inputs.js';
+
 // Mobile responsive
 import { 
   initMobileUI, 
@@ -354,6 +361,45 @@ function initializeApp() {
     console.error('❌ Mobile UI initialization failed:', error);
     // Continue anyway - desktop features will still work
   }
+  
+  // 🔧 Bind player edit inputs
+  bindNumberInput(elements.numberInput, (newNumber) => {
+    const selected = getSelectedPlayers();
+    if (selected.length > 0) {
+      const primary = selected[0];
+      const num = parseInt(newNumber);
+      if (!isNaN(num) && num > 0) {
+        primary.number = num;
+        if (primary.numberEl) {
+          primary.numberEl.textContent = num;
+        }
+      }
+    }
+  });
+
+  bindNameInput(elements.nameInput, (newName) => {
+    const selected = getSelectedPlayers();
+    if (selected.length > 0) {
+      const primary = selected[0];
+      if (newName && newName.trim()) {
+        primary.name = newName.trim();
+        if (primary.nameEl) {
+          primary.nameEl.textContent = primary.name;
+        }
+      }
+    }
+  });
+
+  bindRoleSelect(elements.roleSelect, (newRole) => {
+    const selected = getSelectedPlayers();
+    if (selected.length > 0) {
+      const primary = selected[0];
+      primary.role = newRole;
+      if (primary.roleEl) {
+        primary.roleEl.textContent = newRole;
+      }
+    }
+  });
 }
 
 function updateFormationDropdown() {
@@ -1772,7 +1818,13 @@ function syncPanel() {
         if (role === primary.role) option.selected = true;
         elements.roleSelect.appendChild(option);
       });
-    } else {
+    }
+    
+    // 🔧 Load player values into inputs
+    if (elements.numberInput) elements.numberInput.value = primary.number || '';
+    if (elements.nameInput) elements.nameInput.value = primary.name || '';
+    if (elements.roleSelect && primary.location !== 'staff') elements.roleSelect.value = primary.role || 'ST';
+  } else {
       // Player selected - populate COMPLETE PLAYER_ROLES
       const playerRoles = [
         'GK',      // Goalkeeper

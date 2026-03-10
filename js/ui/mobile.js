@@ -1094,14 +1094,13 @@ function setupPlayerTouch(player) {
       const xPercent = (x / pitchRect.width) * 100;
       const yPercent = (y / pitchRect.height) * 100;
       
-      if (window.state && window.state.players && player._player) {
-        const playerInState = window.state.players.find(p => p.number === player._player.number);
-        if (playerInState) {
-          playerInState.x = xPercent;
-          playerInState.y = yPercent;
-        }
+      // 🔑 Update player data DIRECTLY (same as desktop!)
+      if (player._player) {
+        player._player.x = xPercent;
+        player._player.y = yPercent;
       }
       
+      // Update visual
       const isMobile = window.innerWidth < 1024;
       const offset = isMobile ? 25 : 30;
       wrapper.style.left = `calc(${xPercent}% - ${offset}px)`;

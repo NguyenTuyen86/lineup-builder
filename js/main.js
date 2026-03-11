@@ -353,59 +353,71 @@ function initializeApp() {
   // 🔧 Player edit inputs
   if (elements.numberInput) {
     elements.numberInput.addEventListener('input', () => {
-      console.log('🔢 Number input changed:', elements.numberInput.value);
       const selected = getSelectedPlayers();
-      console.log('Selected players:', selected.length);
+      
       if (selected.length > 0) {
+        const player = selected[0];
         const num = parseInt(elements.numberInput.value);
+        
         if (!isNaN(num) && num > 0) {
-          selected[0].number = num;
-          console.log('Updated player number to:', num);
-          if (selected[0].numberEl) {
-            console.log('Updating numberEl...');
-            updatePlayerNumber(selected[0].numberEl, num);
+          player.number = num;
+          
+          if (player.numberEl) {
+            updatePlayerNumber(player.numberEl, num);
+            showToast && showToast('✅ Số áo đã cập nhật');
           } else {
-            console.log('❌ No numberEl found!');
+            alert('❌ Lỗi: Không tìm thấy numberEl!\nKeys: ' + Object.keys(player).join(', '));
           }
         }
+      } else {
+        alert('⚠️ Chưa chọn cầu thủ!');
       }
     });
   }
   
   if (elements.nameInput) {
     elements.nameInput.addEventListener('input', () => {
-      console.log('✏️ Name input changed:', elements.nameInput.value);
       const selected = getSelectedPlayers();
-      console.log('Selected players:', selected.length);
+      
       if (selected.length > 0) {
+        const player = selected[0];
         const name = elements.nameInput.value.trim();
+        
         if (name) {
-          selected[0].name = name;
-          console.log('Updated player name to:', name);
-          if (selected[0].nameEl) {
-            console.log('Updating nameEl...');
-            updatePlayerName(selected[0].nameEl, name);
+          // Update data
+          player.name = name;
+          
+          // Update DOM
+          if (player.nameEl) {
+            updatePlayerName(player.nameEl, name);
+            // Show success
+            showToast && showToast('✅ Tên đã cập nhật');
           } else {
-            console.log('❌ No nameEl found!');
+            alert('❌ Lỗi: Không tìm thấy nameEl!\nKeys: ' + Object.keys(player).join(', '));
           }
         }
+      } else {
+        alert('⚠️ Chưa chọn cầu thủ nào!');
       }
     });
   }
   
   if (elements.roleSelect) {
     elements.roleSelect.addEventListener('change', () => {
-      console.log('🎯 Role changed:', elements.roleSelect.value);
       const selected = getSelectedPlayers();
+      
       if (selected.length > 0) {
-        selected[0].role = elements.roleSelect.value;
-        console.log('Updated player role to:', selected[0].role);
-        if (selected[0].roleEl) {
-          console.log('Updating roleEl...');
-          updatePlayerRole(selected[0].roleEl, selected[0].role);
+        const player = selected[0];
+        player.role = elements.roleSelect.value;
+        
+        if (player.roleEl) {
+          updatePlayerRole(player.roleEl, player.role);
+          showToast && showToast('✅ Vị trí đã cập nhật');
         } else {
-          console.log('❌ No roleEl found!');
+          alert('❌ Lỗi: Không tìm thấy roleEl!\nKeys: ' + Object.keys(player).join(', '));
         }
+      } else {
+        alert('⚠️ Chưa chọn cầu thủ!');
       }
     });
   }

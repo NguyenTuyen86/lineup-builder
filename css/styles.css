@@ -1652,6 +1652,17 @@ h2, h3, h4 {
     font-size: 16px;
   }
   
+  /* Ensure move-grid shows in mobile sheet */
+  .mobile-sheet-content .move-grid {
+    display: grid !important;
+    visibility: visible !important;
+  }
+  
+  .mobile-sheet-content .move-grid button {
+    padding: 8px !important;
+    font-size: 16px !important;
+  }
+  
   /* ==================
      SQUAD LIST (Mobile)
      ================== */
@@ -2400,11 +2411,11 @@ h2, h3, h4 {
 
 @media (max-width: 1023px) {
   .bench-delete-btn {
-    top: 0 !important;        /* Even lower */
+    top: 0 !important;
     right: 0 !important;
-    width: 20px !important;   /* Slightly bigger for easier tap */
-    height: 20px !important;
-    font-size: 12px !important;
+    width: 12px !important;    /* Half of 24px */
+    height: 12px !important;   /* Half of 24px */
+    font-size: 8px !important; /* Smaller emoji */
     min-width: 16px !important;
     line-height: 16px !important;
   }

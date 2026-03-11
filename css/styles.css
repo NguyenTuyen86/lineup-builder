@@ -1680,12 +1680,19 @@ h2, h3, h4 {
   
   /* Show direction controls on mobile */
   .move-grid {
-    max-width: 150px !important; /* Smaller on mobile */
+    display: grid !important; /* Force display */
+    max-width: 150px !important;
+    margin: 0 auto !important; /* Center it */
   }
   
   .move-grid button {
-    padding: 8px !important; /* Smaller buttons */
+    padding: 8px !important;
     font-size: 16px !important;
+  }
+  
+  /* Also ensure it shows in mobile sheet */
+  .mobile-sheet .move-grid {
+    display: grid !important;
   }
   
   /* Hide custom color */
@@ -2393,11 +2400,11 @@ h2, h3, h4 {
 
 @media (max-width: 1023px) {
   .bench-delete-btn {
-    top: 2px !important;      /* Lower position (was 4px) */
-    right: 2px !important;
-    width: 16px !important;   /* 50% of 32px */
-    height: 16px !important;
-    font-size: 10px !important;
+    top: 0 !important;        /* Even lower */
+    right: 0 !important;
+    width: 20px !important;   /* Slightly bigger for easier tap */
+    height: 20px !important;
+    font-size: 12px !important;
     min-width: 16px !important;
     line-height: 16px !important;
   }

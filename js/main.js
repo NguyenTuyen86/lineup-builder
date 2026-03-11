@@ -344,6 +344,11 @@ function initializeApp() {
       console.log('✅ Mobile UI initialized successfully');
     } else {
       console.log('💻 Desktop device detected');
+    }
+  } catch (error) {
+    console.error('❌ Mobile UI initialization failed:', error);
+    // Continue anyway - desktop features will still work
+  }
 
   // 🔧 Player edit inputs
   if (elements.numberInput) {
@@ -403,10 +408,6 @@ function initializeApp() {
         }
       }
     });
-  }
-  } catch (error) {
-    console.error('❌ Mobile UI initialization failed:', error);
-    // Continue anyway - desktop features will still work
   }
 }
 

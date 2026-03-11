@@ -353,7 +353,9 @@ function initializeApp() {
         const num = parseInt(elements.numberInput.value);
         if (!isNaN(num) && num > 0) {
           selected[0].number = num;
-          if (selected[0].numberEl) selected[0].numberEl.textContent = num;
+          if (selected[0].numberEl) {
+            updatePlayerNumber(selected[0].numberEl, num);
+          }
         }
       }
     });
@@ -366,7 +368,9 @@ function initializeApp() {
         const name = elements.nameInput.value.trim();
         if (name) {
           selected[0].name = name;
-          if (selected[0].nameEl) selected[0].nameEl.textContent = name;
+          if (selected[0].nameEl) {
+            updatePlayerName(selected[0].nameEl, name);
+          }
         }
       }
     });
@@ -377,7 +381,9 @@ function initializeApp() {
       const selected = getSelectedPlayers();
       if (selected.length > 0) {
         selected[0].role = elements.roleSelect.value;
-        if (selected[0].roleEl) selected[0].roleEl.textContent = selected[0].role;
+        if (selected[0].roleEl) {
+          updatePlayerRole(selected[0].roleEl, selected[0].role);
+        }
       }
     });
   }

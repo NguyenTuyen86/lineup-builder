@@ -348,13 +348,19 @@ function initializeApp() {
   // 🔧 Player edit inputs
   if (elements.numberInput) {
     elements.numberInput.addEventListener('input', () => {
+      console.log('🔢 Number input changed:', elements.numberInput.value);
       const selected = getSelectedPlayers();
+      console.log('Selected players:', selected.length);
       if (selected.length > 0) {
         const num = parseInt(elements.numberInput.value);
         if (!isNaN(num) && num > 0) {
           selected[0].number = num;
+          console.log('Updated player number to:', num);
           if (selected[0].numberEl) {
+            console.log('Updating numberEl...');
             updatePlayerNumber(selected[0].numberEl, num);
+          } else {
+            console.log('❌ No numberEl found!');
           }
         }
       }
@@ -363,13 +369,18 @@ function initializeApp() {
   
   if (elements.nameInput) {
     elements.nameInput.addEventListener('input', () => {
+      console.log('✏️ Name input changed:', elements.nameInput.value);
       const selected = getSelectedPlayers();
       if (selected.length > 0) {
         const name = elements.nameInput.value.trim();
         if (name) {
           selected[0].name = name;
+          console.log('Updated player name to:', name);
           if (selected[0].nameEl) {
+            console.log('Updating nameEl...');
             updatePlayerName(selected[0].nameEl, name);
+          } else {
+            console.log('❌ No nameEl found!');
           }
         }
       }
@@ -378,11 +389,16 @@ function initializeApp() {
   
   if (elements.roleSelect) {
     elements.roleSelect.addEventListener('change', () => {
+      console.log('🎯 Role changed:', elements.roleSelect.value);
       const selected = getSelectedPlayers();
       if (selected.length > 0) {
         selected[0].role = elements.roleSelect.value;
+        console.log('Updated player role to:', selected[0].role);
         if (selected[0].roleEl) {
+          console.log('Updating roleEl...');
           updatePlayerRole(selected[0].roleEl, selected[0].role);
+        } else {
+          console.log('❌ No roleEl found!');
         }
       }
     });
@@ -1777,10 +1793,6 @@ function syncPanel() {
         elements.roleSelect.appendChild(option);
       });
 
-    // Load values into inputs
-    if (elements.numberInput) elements.numberInput.value = primary.number || '';
-    if (elements.nameInput) elements.nameInput.value = primary.name || '';
-    if (elements.roleSelect && primary.location !== 'staff') elements.roleSelect.value = primary.role || 'ST';
     } else {
       // Player selected - populate COMPLETE PLAYER_ROLES
       const playerRoles = [
@@ -1802,6 +1814,23 @@ function syncPanel() {
         if (role === primary.role) option.selected = true;
         elements.roleSelect.appendChild(option);
       });
+    }
+    
+    // 🔧 Load values into inputs (AFTER role select is populated)
+    if (elements.numberInput) elements.numberInput.value = primary.number || '';
+    if (elements.nameInput) elements.nameInput.value = primary.name || '';
+    if (elements.roleSelect) elements.roleSelect.value = primary.role || 'ST';
+    
+    // 🔧 Load avatar preview
+    if (elements.avatarPreview && elements.avatarPlaceholder) {
+      if (primary.avatar) {
+        elements.avatarPreview.src = primary.avatar;
+        elements.avatarPreview.style.display = 'block';
+        elements.avatarPlaceholder.style.display = 'none';
+      } else {
+        elements.avatarPreview.style.display = 'none';
+        elements.avatarPlaceholder.style.display = 'block';
+      }
     }
   }
 }

@@ -889,14 +889,14 @@ h2, h3, h4 {
   position: absolute;
   top: 4px;
   right: 4px;
-  width: 24px;
-  height: 24px;
+  width: 12px;       /* Was 24px, now half */
+  height: 12px;      /* Was 24px, now half */
   padding: 0;
   background: rgba(224, 0, 0, 0.8);
   border: 1px solid #fff;
-  border-radius: 4px;
+  border-radius: 3px;  /* Also smaller */
   color: #fff;
-  font-size: 14px;
+  font-size: 8px;      /* Smaller icon */
   cursor: pointer;
   transition: all 0.2s;
   display: flex;
@@ -1692,18 +1692,30 @@ h2, h3, h4 {
   /* Show direction controls on mobile */
   .move-grid {
     display: grid !important; /* Force display */
+    visibility: visible !important;
     max-width: 150px !important;
-    margin: 0 auto !important; /* Center it */
+    margin: 0 auto !important;
+    position: relative !important;
+    z-index: 1 !important;
   }
   
   .move-grid button {
     padding: 8px !important;
     font-size: 16px !important;
+    display: block !important;
   }
   
   /* Also ensure it shows in mobile sheet */
   .mobile-sheet .move-grid {
     display: grid !important;
+    visibility: visible !important;
+  }
+  
+  /* Ensure parent div is visible */
+  .player-panel div:has(.move-grid),
+  .mobile-sheet div:has(.move-grid) {
+    display: block !important;
+    visibility: visible !important;
   }
   
   /* Hide custom color */

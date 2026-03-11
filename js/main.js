@@ -348,15 +348,19 @@ function initializeApp() {
   // 🔧 Player edit inputs
   if (elements.numberInput) {
     elements.numberInput.addEventListener('input', () => {
+      console.log('🔢 Number input changed:', elements.numberInput.value);
       const selected = getSelectedPlayers();
+      console.log('Selected players:', selected.length);
       if (selected.length > 0) {
         const num = parseInt(elements.numberInput.value);
         if (!isNaN(num) && num > 0) {
           selected[0].number = num;
+          console.log('Updated player number to:', num);
           if (selected[0].numberEl) {
+            console.log('Updating numberEl...');
             updatePlayerNumber(selected[0].numberEl, num);
-            // Force display in case it's hidden
-            selected[0].numberEl.style.display = 'block';
+          } else {
+            console.log('❌ No numberEl found!');
           }
         }
       }
@@ -365,15 +369,19 @@ function initializeApp() {
   
   if (elements.nameInput) {
     elements.nameInput.addEventListener('input', () => {
+      console.log('✏️ Name input changed:', elements.nameInput.value);
       const selected = getSelectedPlayers();
+      console.log('Selected players:', selected.length);
       if (selected.length > 0) {
         const name = elements.nameInput.value.trim();
         if (name) {
           selected[0].name = name;
+          console.log('Updated player name to:', name);
           if (selected[0].nameEl) {
+            console.log('Updating nameEl...');
             updatePlayerName(selected[0].nameEl, name);
-            // Force display in case it's hidden
-            selected[0].nameEl.style.display = 'inline-block';
+          } else {
+            console.log('❌ No nameEl found!');
           }
         }
       }
@@ -382,24 +390,20 @@ function initializeApp() {
   
   if (elements.roleSelect) {
     elements.roleSelect.addEventListener('change', () => {
+      console.log('🎯 Role changed:', elements.roleSelect.value);
       const selected = getSelectedPlayers();
       if (selected.length > 0) {
         selected[0].role = elements.roleSelect.value;
+        console.log('Updated player role to:', selected[0].role);
         if (selected[0].roleEl) {
+          console.log('Updating roleEl...');
           updatePlayerRole(selected[0].roleEl, selected[0].role);
-          // Force display in case it's hidden
-          selected[0].roleEl.style.display = 'block';
-        }
-      }
-    });
-  }
         } else {
           console.log('❌ No roleEl found!');
         }
       }
     });
   }
-    }
   } catch (error) {
     console.error('❌ Mobile UI initialization failed:', error);
     // Continue anyway - desktop features will still work

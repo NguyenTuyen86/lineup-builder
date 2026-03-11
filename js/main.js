@@ -344,22 +344,16 @@ function initializeApp() {
       console.log('✅ Mobile UI initialized successfully');
     } else {
       console.log('💻 Desktop device detected');
-    }
-  } catch (error) {
-    console.error('❌ Mobile UI initialization failed:', error);
-    // Continue anyway - desktop features will still work
-  }
-}
-  // 🔧 Simple player edit - update on input change
+
+  // 🔧 Player edit inputs
   if (elements.numberInput) {
     elements.numberInput.addEventListener('input', () => {
       const selected = getSelectedPlayers();
       if (selected.length > 0) {
-        const player = selected[0];
         const num = parseInt(elements.numberInput.value);
         if (!isNaN(num) && num > 0) {
-          player.number = num;
-          if (player.numberEl) player.numberEl.textContent = num;
+          selected[0].number = num;
+          if (selected[0].numberEl) selected[0].numberEl.textContent = num;
         }
       }
     });
@@ -369,11 +363,10 @@ function initializeApp() {
     elements.nameInput.addEventListener('input', () => {
       const selected = getSelectedPlayers();
       if (selected.length > 0) {
-        const player = selected[0];
         const name = elements.nameInput.value.trim();
         if (name) {
-          player.name = name;
-          if (player.nameEl) player.nameEl.textContent = name;
+          selected[0].name = name;
+          if (selected[0].nameEl) selected[0].nameEl.textContent = name;
         }
       }
     });
@@ -383,12 +376,17 @@ function initializeApp() {
     elements.roleSelect.addEventListener('change', () => {
       const selected = getSelectedPlayers();
       if (selected.length > 0) {
-        const player = selected[0];
-        player.role = elements.roleSelect.value;
-        if (player.roleEl) player.roleEl.textContent = player.role;
+        selected[0].role = elements.roleSelect.value;
+        if (selected[0].roleEl) selected[0].roleEl.textContent = selected[0].role;
       }
     });
   }
+    }
+  } catch (error) {
+    console.error('❌ Mobile UI initialization failed:', error);
+    // Continue anyway - desktop features will still work
+  }
+}
 
 function updateFormationDropdown() {
   const formationNames = getFormationNames(state.playerCount);
@@ -482,7 +480,7 @@ function renderLineup() {
         player.nameEl = domElements.nameElement;
         player.roleEl = domElements.roleElement;
         
-        // 🔑 CRITICAL: Store player data reference on DOM element for mobile!
+        // 🔑 Store player data reference on DOM element
         domElements.element._player = player;
         
         // Track drag state to prevent click after drag
@@ -707,8 +705,50 @@ function renderBenchWithCallbacks() {
       newLineup.forEach(p => {
         if (positionBackup.has(p.number)) {
           const backup = positionBackup.get(p.number);
+          p.x = backup.x;
+          p.y = backup.y;
+          restoredCount++;
+          restoredList += `#${p.number} `;
+        }
+      });
+      
+      // 🔍 Show ALL restored player numbers
+      alert(`RESTORED ${restoredCount} players: ${restoredList}`);
+      
+      // Update state
+      state.lineup = newLineup;
+      state.bench = newBench;
+      state.players = state.lineup;
+      
+      // Render
+      renderLineup();
+      renderBenchWithCallbacks();
+      
+      // 🔍 Check after render - show positions
+      setTimeout(() => {
+        let finalList = '';
+        state.lineup.forEach(p => {
+          finalList += `#${p.number}:${p.x.toFixed(0)},${p.y.toFixed(0)} `;
+        });
+        alert(`FINAL: ${finalList}`);
+      }, 100);
+      
+    } catch (error) {
+      console.error('❌ Swap error:', error);
+      alert('Swap error: ' + error.message);
+    }
+  };
+  
+  // Verify handler is registered
+  console.log('✅ mobileSwapHandler registered:', typeof window.mobileSwapHandler);
+  
+  // Setup drag AFTER bench render
+  setTimeout(() => {
+    enableBenchDrag(elements.bench, {
+      onDragStart: (player) => {
+        console.log('🎯 Dragging:', player.name);
+      },
       onSwap: (benchPlayer, lineupPlayer) => {
-        // Save positions (already in state.players from drag!)
         const positionBackup = new Map();
         state.players.forEach(p => {
           if (p.x !== undefined && p.y !== undefined) {
@@ -716,15 +756,12 @@ function renderBenchWithCallbacks() {
           }
         });
         
-        // Swap
         swapPlayers(benchPlayer, lineupPlayer);
         
-        // Update arrays
         state.lineup = state.squad.filter(p => p.location === 'lineup')
           .sort((a, b) => a.slotIndex - b.slotIndex);
         state.bench = state.squad.filter(p => p.location === 'bench');
         
-        // Restore positions
         state.lineup.forEach(p => {
           if (positionBackup.has(p.number)) {
             const backup = positionBackup.get(p.number);
@@ -733,54 +770,7 @@ function renderBenchWithCallbacks() {
           }
         });
         
-        // Update state
         state.players = state.lineup;
-        
-        // Render
-        renderLineup();
-      }
-            x: p.x,
-            y: p.y,
-            wrap: p.wrap,
-            el: p.el,
-            nameEl: p.nameEl,
-            numberEl: p.numberEl,
-            roleEl: p.roleEl
-          });
-        });
-        
-        console.log('💾 Saved player data for', playerDataMap.size, 'players');
-        alert(`💾 Saved: ${playerDataMap.size} players`); // Debug
-        
-        // Perform swap
-        swapPlayers(benchPlayer, lineupPlayer);
-        
-        // Update state arrays
-        const newLineup = state.squad.filter(p => p.location === 'lineup')
-          .sort((a, b) => a.slotIndex - b.slotIndex);
-        const newBench = state.squad.filter(p => p.location === 'bench');
-        
-        // 🆕 RESTORE custom positions and DOM refs to NEW player objects
-        let restoredCount = 0;
-        newLineup.forEach(p => {
-          if (playerDataMap.has(p.number)) {
-            const saved = playerDataMap.get(p.number);
-            p.x = saved.x;
-            p.y = saved.y;
-            restoredCount++;
-            console.log('📌 Restored position for', p.name, '@', p.x, p.y);
-          }
-        });
-        
-        alert(`📌 Restored: ${restoredCount} players`); // Debug
-        
-        // Update state
-        state.lineup = newLineup;
-        state.bench = newBench;
-        state.players = state.lineup;
-        
-        console.log('✅ Swapped:', benchPlayer.name, '↔', lineupPlayer.name);
-        
         renderLineup();
       }
     });
@@ -1780,6 +1770,11 @@ function syncPanel() {
         if (role === primary.role) option.selected = true;
         elements.roleSelect.appendChild(option);
       });
+
+    // Load values into inputs
+    if (elements.numberInput) elements.numberInput.value = primary.number || '';
+    if (elements.nameInput) elements.nameInput.value = primary.name || '';
+    if (elements.roleSelect && primary.location !== 'staff') elements.roleSelect.value = primary.role || 'ST';
     } else {
       // Player selected - populate COMPLETE PLAYER_ROLES
       const playerRoles = [
@@ -1802,12 +1797,6 @@ function syncPanel() {
         elements.roleSelect.appendChild(option);
       });
     }
-    
-    // 🔧 Load player values into inputs
-    if (elements.numberInput) elements.numberInput.value = primary.number || '';
-    if (elements.nameInput) elements.nameInput.value = primary.name || '';
-    if (elements.roleSelect && primary.location !== 'staff') elements.roleSelect.value = primary.role || 'ST';
-  }
   }
 }
 

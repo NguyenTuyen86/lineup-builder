@@ -353,9 +353,22 @@ function initializeApp() {
   // 🔧 Player edit inputs
   alert('🔧 Setting up edit listeners...');
   
-  if (elements.numberInput) {
-    alert('✅ numberInput found!');
-    elements.numberInput.addEventListener('input', () => {
+  // For mobile: bind to inputs in mobile sheet
+  const isMobile = window.innerWidth <= 1280 || /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+  
+  const numberInput = isMobile ? 
+    document.querySelector('.mobile-sheet-content #num') || elements.numberInput : 
+    elements.numberInput;
+  const nameInput = isMobile ? 
+    document.querySelector('.mobile-sheet-content #name') || elements.nameInput : 
+    elements.nameInput;
+  const roleSelect = isMobile ? 
+    document.querySelector('.mobile-sheet-content #role') || elements.roleSelect : 
+    elements.roleSelect;
+  
+  if (numberInput) {
+    alert('✅ numberInput found: ' + (isMobile ? 'mobile sheet' : 'desktop'));
+    numberInput.addEventListener('input', () => {
       alert('🔢 Number changed!');
       const selected = getSelectedPlayers();
       
@@ -381,9 +394,9 @@ function initializeApp() {
     alert('❌ numberInput NOT found!');
   }
   
-  if (elements.nameInput) {
-    alert('✅ nameInput found!');
-    elements.nameInput.addEventListener('input', () => {
+  if (nameInput) {
+    alert('✅ nameInput found: ' + (isMobile ? 'mobile sheet' : 'desktop'));
+    nameInput.addEventListener('input', () => {
       alert('✏️ Name changed!');
       const selected = getSelectedPlayers();
       
@@ -412,9 +425,9 @@ function initializeApp() {
     alert('❌ nameInput NOT found!');
   }
   
-  if (elements.roleSelect) {
-    alert('✅ roleSelect found!');
-    elements.roleSelect.addEventListener('change', () => {
+  if (roleSelect) {
+    alert('✅ roleSelect found: ' + (isMobile ? 'mobile sheet' : 'desktop'));
+    roleSelect.addEventListener('change', () => {
       alert('🎯 Role changed!');
       const selected = getSelectedPlayers();
       

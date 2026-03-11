@@ -351,8 +351,12 @@ function initializeApp() {
   }
 
   // 🔧 Player edit inputs
+  alert('🔧 Setting up edit listeners...');
+  
   if (elements.numberInput) {
+    alert('✅ numberInput found!');
     elements.numberInput.addEventListener('input', () => {
+      alert('🔢 Number changed!');
       const selected = getSelectedPlayers();
       
       if (selected.length > 0) {
@@ -373,10 +377,14 @@ function initializeApp() {
         alert('⚠️ Chưa chọn cầu thủ!');
       }
     });
+  } else {
+    alert('❌ numberInput NOT found!');
   }
   
   if (elements.nameInput) {
+    alert('✅ nameInput found!');
     elements.nameInput.addEventListener('input', () => {
+      alert('✏️ Name changed!');
       const selected = getSelectedPlayers();
       
       if (selected.length > 0) {
@@ -400,10 +408,14 @@ function initializeApp() {
         alert('⚠️ Chưa chọn cầu thủ nào!');
       }
     });
+  } else {
+    alert('❌ nameInput NOT found!');
   }
   
   if (elements.roleSelect) {
+    alert('✅ roleSelect found!');
     elements.roleSelect.addEventListener('change', () => {
+      alert('🎯 Role changed!');
       const selected = getSelectedPlayers();
       
       if (selected.length > 0) {
@@ -420,7 +432,11 @@ function initializeApp() {
         alert('⚠️ Chưa chọn cầu thủ!');
       }
     });
+  } else {
+    alert('❌ roleSelect NOT found!');
   }
+  
+  alert('✅ Edit listeners setup complete!');
 }
 
 function updateFormationDropdown() {

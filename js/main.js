@@ -1916,6 +1916,19 @@ function syncPanel() {
         if (role === primary.role) option.selected = true;
         elements.roleSelect.appendChild(option);
       });
+      
+      // 🔧 ALSO populate mobile sheet role select
+      const mobileRoleSelect = document.querySelector('.mobile-sheet-content #role');
+      if (mobileRoleSelect) {
+        mobileRoleSelect.innerHTML = '';
+        STAFF_ROLES.forEach(role => {
+          const option = document.createElement('option');
+          option.value = role;
+          option.textContent = role;
+          if (role === primary.role) option.selected = true;
+          mobileRoleSelect.appendChild(option);
+        });
+      }
 
     } else {
       // Player selected - populate COMPLETE PLAYER_ROLES
@@ -1930,6 +1943,7 @@ function syncPanel() {
         'CF', 'ST'   // Forwards
       ];
       
+      // Populate desktop role select
       elements.roleSelect.innerHTML = '';
       playerRoles.forEach(role => {
         const option = document.createElement('option');
@@ -1938,12 +1952,39 @@ function syncPanel() {
         if (role === primary.role) option.selected = true;
         elements.roleSelect.appendChild(option);
       });
+      
+      // 🔧 ALSO populate mobile sheet role select
+      const mobileRoleSelect = document.querySelector('.mobile-sheet-content #role');
+      if (mobileRoleSelect) {
+        mobileRoleSelect.innerHTML = '';
+        playerRoles.forEach(role => {
+          const option = document.createElement('option');
+          option.value = role;
+          option.textContent = role;
+          if (role === primary.role) option.selected = true;
+          mobileRoleSelect.appendChild(option);
+        });
+      }
     }
     
     // 🔧 Load values into inputs (AFTER role select is populated)
-    if (elements.numberInput) elements.numberInput.value = primary.number || '';
-    if (elements.nameInput) elements.nameInput.value = primary.name || '';
-    if (elements.roleSelect) elements.roleSelect.value = primary.role || 'ST';
+    const isMobile = window.innerWidth <= 1280 || /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    
+    if (isMobile) {
+      // Mobile: load into mobile sheet inputs
+      const mobileNumberInput = document.querySelector('.mobile-sheet-content #num');
+      const mobileNameInput = document.querySelector('.mobile-sheet-content #name');
+      const mobileRoleSelect = document.querySelector('.mobile-sheet-content #role');
+      
+      if (mobileNumberInput) mobileNumberInput.value = primary.number || '';
+      if (mobileNameInput) mobileNameInput.value = primary.name || '';
+      if (mobileRoleSelect) mobileRoleSelect.value = primary.role || 'ST';
+    } else {
+      // Desktop: load into panel inputs
+      if (elements.numberInput) elements.numberInput.value = primary.number || '';
+      if (elements.nameInput) elements.nameInput.value = primary.name || '';
+      if (elements.roleSelect) elements.roleSelect.value = primary.role || 'ST';
+    }
     
     // 🔧 Load avatar preview
     if (elements.avatarPreview && elements.avatarPlaceholder) {

@@ -351,23 +351,17 @@ function initializeApp() {
   }
 
   // 🔧 Player edit inputs
-  alert('🔧 Setting up edit listeners...');
-  
   const isMobile = window.innerWidth <= 1280 || /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
   
   if (isMobile) {
-    alert('📱 Mobile detected - using event delegation');
-    
     // Event delegation on mobile sheet content
     const mobileSheetContent = document.getElementById('mobileSheetContent');
     
     if (mobileSheetContent) {
-      alert('✅ Mobile sheet content found!');
       
       // Listen for input events on ANY #num inside
       mobileSheetContent.addEventListener('input', (e) => {
         if (e.target.id === 'num') {
-          alert('🔢 Number changed via delegation!');
           const selected = getSelectedPlayers();
           
           if (selected.length > 0) {
@@ -380,18 +374,13 @@ function initializeApp() {
               if (player.numberEl) {
                 updatePlayerNumber(player.numberEl, num);
                 showToast && showToast('✅ Số áo đã cập nhật');
-              } else {
-                alert('❌ Lỗi: Không tìm thấy numberEl!');
               }
             }
-          } else {
-            alert('⚠️ Chưa chọn cầu thủ!');
           }
         }
         
         // Name input
         if (e.target.id === 'name') {
-          alert('✏️ Name changed via delegation!');
           const selected = getSelectedPlayers();
           
           if (selected.length > 0) {
@@ -404,12 +393,8 @@ function initializeApp() {
               if (player.nameEl) {
                 updatePlayerName(player.nameEl, name);
                 showToast && showToast('✅ Tên đã cập nhật');
-              } else {
-                alert('❌ Lỗi: Không tìm thấy nameEl!');
               }
             }
-          } else {
-            alert('⚠️ Chưa chọn cầu thủ!');
           }
         }
       });
@@ -417,7 +402,6 @@ function initializeApp() {
       // Listen for change events (for select)
       mobileSheetContent.addEventListener('change', (e) => {
         if (e.target.id === 'role') {
-          alert('🎯 Role changed via delegation!');
           const selected = getSelectedPlayers();
           
           if (selected.length > 0) {
@@ -427,28 +411,16 @@ function initializeApp() {
             if (player.roleEl) {
               updatePlayerRole(player.roleEl, player.role);
               showToast && showToast('✅ Vị trí đã cập nhật');
-            } else {
-              alert('❌ Lỗi: Không tìm thấy roleEl!');
             }
-          } else {
-            alert('⚠️ Chưa chọn cầu thủ!');
           }
         }
       });
-      
-      alert('✅ Mobile event delegation setup complete!');
-    } else {
-      alert('❌ Mobile sheet content NOT found!');
     }
     
   } else {
-    alert('💻 Desktop detected - using direct binding');
-    
     // Desktop: bind directly
     if (elements.numberInput) {
-      alert('✅ numberInput found!');
       elements.numberInput.addEventListener('input', () => {
-        alert('🔢 Number changed!');
         const selected = getSelectedPlayers();
       
       if (selected.length > 0) {
@@ -462,21 +434,16 @@ function initializeApp() {
             updatePlayerNumber(player.numberEl, num);
             showToast && showToast('✅ Số áo đã cập nhật');
           } else {
-            alert('❌ Lỗi: Không tìm thấy numberEl!\nKeys: ' + Object.keys(player).join(', '));
           }
         }
       } else {
-        alert('⚠️ Chưa chọn cầu thủ!');
       }
     });
   } else {
-    alert('❌ numberInput NOT found!');
   }
   
   if (nameInput) {
-    alert('✅ nameInput found: ' + (isMobile ? 'mobile sheet' : 'desktop'));
     nameInput.addEventListener('input', () => {
-      alert('✏️ Name changed!');
       const selected = getSelectedPlayers();
       
       if (selected.length > 0) {
@@ -493,21 +460,16 @@ function initializeApp() {
             // Show success
             showToast && showToast('✅ Tên đã cập nhật');
           } else {
-            alert('❌ Lỗi: Không tìm thấy nameEl!\nKeys: ' + Object.keys(player).join(', '));
           }
         }
       } else {
-        alert('⚠️ Chưa chọn cầu thủ nào!');
       }
     });
   } else {
-    alert('❌ nameInput NOT found!');
   }
   
   if (roleSelect) {
-    alert('✅ roleSelect found: ' + (isMobile ? 'mobile sheet' : 'desktop'));
     roleSelect.addEventListener('change', () => {
-      alert('🎯 Role changed!');
       const selected = getSelectedPlayers();
       
       if (selected.length > 0) {
@@ -518,20 +480,15 @@ function initializeApp() {
           updatePlayerRole(player.roleEl, player.role);
           showToast && showToast('✅ Vị trí đã cập nhật');
         } else {
-          alert('❌ Lỗi: Không tìm thấy roleEl!\nKeys: ' + Object.keys(player).join(', '));
         }
       } else {
-        alert('⚠️ Chưa chọn cầu thủ!');
       }
     });
   } else {
-    alert('❌ roleSelect NOT found!');
   }
   
-  alert('✅ Desktop bindings complete!');
   } // Close desktop else block
   
-  alert('✅ Edit listeners setup complete!');
 }
 
 function updateFormationDropdown() {
@@ -1970,20 +1927,36 @@ function syncPanel() {
     // 🔧 Load values into inputs (AFTER role select is populated)
     const isMobile = window.innerWidth <= 1280 || /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
     
+    // Use setTimeout for mobile to ensure sheet is rendered
+    const loadValues = () => {
+      if (isMobile) {
+        // Mobile: load into mobile sheet inputs
+        const mobileNumberInput = document.querySelector('.mobile-sheet-content #num');
+        const mobileNameInput = document.querySelector('.mobile-sheet-content #name');
+        const mobileRoleSelect = document.querySelector('.mobile-sheet-content #role');
+        
+        if (mobileNumberInput) mobileNumberInput.value = primary.number || '';
+        if (mobileNameInput) mobileNameInput.value = primary.name || '';
+        if (mobileRoleSelect) {
+          mobileRoleSelect.value = primary.role || 'ST';
+          // Debug: verify role was set
+          if (mobileRoleSelect.value !== primary.role) {
+            console.error('❌ Role not set correctly!', 'Expected:', primary.role, 'Got:', mobileRoleSelect.value);
+          }
+        }
+      } else {
+        // Desktop: load into panel inputs
+        if (elements.numberInput) elements.numberInput.value = primary.number || '';
+        if (elements.nameInput) elements.nameInput.value = primary.name || '';
+        if (elements.roleSelect) elements.roleSelect.value = primary.role || 'ST';
+      }
+    };
+    
     if (isMobile) {
-      // Mobile: load into mobile sheet inputs
-      const mobileNumberInput = document.querySelector('.mobile-sheet-content #num');
-      const mobileNameInput = document.querySelector('.mobile-sheet-content #name');
-      const mobileRoleSelect = document.querySelector('.mobile-sheet-content #role');
-      
-      if (mobileNumberInput) mobileNumberInput.value = primary.number || '';
-      if (mobileNameInput) mobileNameInput.value = primary.name || '';
-      if (mobileRoleSelect) mobileRoleSelect.value = primary.role || 'ST';
+      // Delay for mobile sheet rendering
+      setTimeout(loadValues, 100);
     } else {
-      // Desktop: load into panel inputs
-      if (elements.numberInput) elements.numberInput.value = primary.number || '';
-      if (elements.nameInput) elements.nameInput.value = primary.name || '';
-      if (elements.roleSelect) elements.roleSelect.value = primary.role || 'ST';
+      loadValues();
     }
     
     // 🔧 Load avatar preview

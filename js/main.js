@@ -353,24 +353,103 @@ function initializeApp() {
   // 🔧 Player edit inputs
   alert('🔧 Setting up edit listeners...');
   
-  // For mobile: bind to inputs in mobile sheet
   const isMobile = window.innerWidth <= 1280 || /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
   
-  const numberInput = isMobile ? 
-    document.querySelector('.mobile-sheet-content #num') || elements.numberInput : 
-    elements.numberInput;
-  const nameInput = isMobile ? 
-    document.querySelector('.mobile-sheet-content #name') || elements.nameInput : 
-    elements.nameInput;
-  const roleSelect = isMobile ? 
-    document.querySelector('.mobile-sheet-content #role') || elements.roleSelect : 
-    elements.roleSelect;
-  
-  if (numberInput) {
-    alert('✅ numberInput found: ' + (isMobile ? 'mobile sheet' : 'desktop'));
-    numberInput.addEventListener('input', () => {
-      alert('🔢 Number changed!');
-      const selected = getSelectedPlayers();
+  if (isMobile) {
+    alert('📱 Mobile detected - using event delegation');
+    
+    // Event delegation on mobile sheet content
+    const mobileSheetContent = document.getElementById('mobileSheetContent');
+    
+    if (mobileSheetContent) {
+      alert('✅ Mobile sheet content found!');
+      
+      // Listen for input events on ANY #num inside
+      mobileSheetContent.addEventListener('input', (e) => {
+        if (e.target.id === 'num') {
+          alert('🔢 Number changed via delegation!');
+          const selected = getSelectedPlayers();
+          
+          if (selected.length > 0) {
+            const player = selected[0];
+            const num = parseInt(e.target.value);
+            
+            if (!isNaN(num) && num > 0) {
+              player.number = num;
+              
+              if (player.numberEl) {
+                updatePlayerNumber(player.numberEl, num);
+                showToast && showToast('✅ Số áo đã cập nhật');
+              } else {
+                alert('❌ Lỗi: Không tìm thấy numberEl!');
+              }
+            }
+          } else {
+            alert('⚠️ Chưa chọn cầu thủ!');
+          }
+        }
+        
+        // Name input
+        if (e.target.id === 'name') {
+          alert('✏️ Name changed via delegation!');
+          const selected = getSelectedPlayers();
+          
+          if (selected.length > 0) {
+            const player = selected[0];
+            const name = e.target.value.trim();
+            
+            if (name) {
+              player.name = name;
+              
+              if (player.nameEl) {
+                updatePlayerName(player.nameEl, name);
+                showToast && showToast('✅ Tên đã cập nhật');
+              } else {
+                alert('❌ Lỗi: Không tìm thấy nameEl!');
+              }
+            }
+          } else {
+            alert('⚠️ Chưa chọn cầu thủ!');
+          }
+        }
+      });
+      
+      // Listen for change events (for select)
+      mobileSheetContent.addEventListener('change', (e) => {
+        if (e.target.id === 'role') {
+          alert('🎯 Role changed via delegation!');
+          const selected = getSelectedPlayers();
+          
+          if (selected.length > 0) {
+            const player = selected[0];
+            player.role = e.target.value;
+            
+            if (player.roleEl) {
+              updatePlayerRole(player.roleEl, player.role);
+              showToast && showToast('✅ Vị trí đã cập nhật');
+            } else {
+              alert('❌ Lỗi: Không tìm thấy roleEl!');
+            }
+          } else {
+            alert('⚠️ Chưa chọn cầu thủ!');
+          }
+        }
+      });
+      
+      alert('✅ Mobile event delegation setup complete!');
+    } else {
+      alert('❌ Mobile sheet content NOT found!');
+    }
+    
+  } else {
+    alert('💻 Desktop detected - using direct binding');
+    
+    // Desktop: bind directly
+    if (elements.numberInput) {
+      alert('✅ numberInput found!');
+      elements.numberInput.addEventListener('input', () => {
+        alert('🔢 Number changed!');
+        const selected = getSelectedPlayers();
       
       if (selected.length > 0) {
         const player = selected[0];

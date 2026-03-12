@@ -528,6 +528,9 @@ function initializeApp() {
     alert('❌ roleSelect NOT found!');
   }
   
+  alert('✅ Desktop bindings complete!');
+  } // Close desktop else block
+  
   alert('✅ Edit listeners setup complete!');
 }
 

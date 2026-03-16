@@ -154,10 +154,17 @@ function showMobileElements() {
 function updateFormationOptions(playerCount, formationSelect) {
   if (!formationSelect) return;
   
+  // 🔧 ALL formations - matching desktop exactly!
   const formations = {
-    11: ['4-4-2', '4-3-3', '3-5-2', '4-2-3-1', '3-4-3', '5-3-2', '4-5-1', '5-4-1'],
-    7: ['3-2-1', '2-3-1', '3-1-2', '2-2-2', '1-3-2'],
-    5: ['2-2', '2-1-1', '1-2-1', '1-1-2']
+    11: [
+      '4-4-2', '4-3-3', '4-5-1', '3-5-2', '3-4-3', '5-3-2', '5-4-1', '5-2-3',
+      '4-2-3-1', '4-1-4-1', '4-3-1-2', '4-4-1-1', '4-2-2-2', '4-3-2-1', 
+      '4-1-3-2', '4-1-2-3', '4-2-4', '4-2-1-3', '3-4-2-1', '3-4-1-2',
+      '3-1-4-2', '3-5-1-1', '3-3-1-3', '3-3-3-1', '3-2-4-1', '5-2-2-1',
+      '2-3-4-1', '3-2-3-2'
+    ],
+    7: ['2-1-2-1', '1-4-1', '2-3-1', '3-2-1', '2-2-2', '2-1-3', '4-1-1'],
+    5: ['2-0-2', '2-1-1', '1-2-1', '1-1-2']
   };
   
   const options = formations[playerCount] || formations[11];
@@ -1068,21 +1075,24 @@ function setupPlayerTouch(player) {
     }
     
     // If long press active, start dragging
-    // If long press active, start dragging
     if (isLongPress && (deltaX > 5 || deltaY > 5)) {
       isDragging = true;
       player.classList.add('dragging');
       
+      // PREVENT SCROLL when dragging
       e.preventDefault();
       e.stopPropagation();
       
+      // Move player - simple pixel positioning
       const wrapper = player.parentElement;
-      const pitch = wrapper.parentElement;
+      const pitch = wrapper.parentElement; // .pitch-area
       const pitchRect = pitch.getBoundingClientRect();
       
+      // Calculate position in pixels relative to pitch
       let x = touch.clientX - pitchRect.left - (player.offsetWidth / 2);
       let y = touch.clientY - pitchRect.top - (player.offsetHeight / 2);
       
+      // Clamp to pitch boundaries
       const minX = 0;
       const minY = 0;
       const maxX = pitchRect.width - player.offsetWidth;
@@ -1091,20 +1101,24 @@ function setupPlayerTouch(player) {
       x = Math.max(minX, Math.min(maxX, x));
       y = Math.max(minY, Math.min(maxY, y));
       
+      // 🔑 CRITICAL: Convert pixels to percentage and UPDATE PLAYER DATA!
       const xPercent = (x / pitchRect.width) * 100;
       const yPercent = (y / pitchRect.height) * 100;
       
-      // 🔑 Update player data DIRECTLY (same as desktop!)
+      // Update player data object (this is what gets saved!)
       if (player._player) {
         player._player.x = xPercent;
         player._player.y = yPercent;
+        
+        // 🔍 DEBUG
+        console.log(`📍 Drag #${player._player.number}: ${xPercent.toFixed(1)}, ${yPercent.toFixed(1)}`);
       }
       
-      // Update visual
-      const isMobile = window.innerWidth < 1024;
-      const offset = isMobile ? 25 : 30;
-      wrapper.style.left = `calc(${xPercent}% - ${offset}px)`;
-      wrapper.style.top = `calc(${yPercent}% - ${offset}px)`;
+      // Update wrapper position directly in pixels (visual)
+      wrapper.style.left = `${x}px`;
+      wrapper.style.top = `${y}px`;
+      
+      // Name is now inside player element, so it moves automatically!
     }
   }, { passive: false }); // Must be non-passive to preventDefault
   

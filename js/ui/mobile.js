@@ -1133,6 +1133,10 @@ function setupPlayerTouch(player) {
     // 🔍 DEBUG: Show final position after drag
     if (wasDragging && player._player) {
       console.log(`✅ Release #${player._player.number} at: ${player._player.x.toFixed(1)}, ${player._player.y.toFixed(1)}`);
+      
+      // 🔧 FIX: Convert back to calc format (mobile uses 25px offset)
+      wrapper.style.left = `calc(${player._player.x}% - 25px)`;
+      wrapper.style.top = `calc(${player._player.y}% - 25px)`;
     }
     
     // Reset visual

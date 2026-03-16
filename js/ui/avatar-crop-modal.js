@@ -187,7 +187,7 @@ function setupCropUI(modal, img, resolve) {
     render();
   });
   
-  // Drag to pan
+  // Drag to pan (Mouse)
   canvas.addEventListener('mousedown', (e) => {
     isDragging = true;
     dragStartX = e.clientX - offsetX;
@@ -206,6 +206,30 @@ function setupCropUI(modal, img, resolve) {
     if (isDragging) {
       isDragging = false;
       canvas.style.cursor = 'grab';
+    }
+  });
+  
+  // 🔧 Touch support for mobile
+  canvas.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    isDragging = true;
+    const touch = e.touches[0];
+    dragStartX = touch.clientX - offsetX;
+    dragStartY = touch.clientY - offsetY;
+  }, { passive: false });
+  
+  canvas.addEventListener('touchmove', (e) => {
+    if (!isDragging) return;
+    e.preventDefault();
+    const touch = e.touches[0];
+    offsetX = touch.clientX - dragStartX;
+    offsetY = touch.clientY - dragStartY;
+    render();
+  }, { passive: false });
+  
+  canvas.addEventListener('touchend', () => {
+    if (isDragging) {
+      isDragging = false;
     }
   });
   

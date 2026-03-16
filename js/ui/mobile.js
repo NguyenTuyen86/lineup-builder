@@ -792,6 +792,13 @@ function closeBottomSheet() {
     sheet.style.transform = '';
     document.body.style.overflow = ''; // Restore scroll
     console.log('✅ Bottom sheet closed');
+    
+    // 🔧 Deselect all players
+    const selectedPlayers = document.querySelectorAll('.player.selected');
+    selectedPlayers.forEach(player => {
+      player.classList.remove('selected');
+    });
+    console.log(`✅ Deselected ${selectedPlayers.length} player(s)`);
   } else {
     console.warn('Sheet element not found');
   }

@@ -1960,14 +1960,32 @@ function syncPanel() {
     }
     
     // 🔧 Load avatar preview
-    if (elements.avatarPreview && elements.avatarPlaceholder) {
-      if (primary.avatar) {
-        elements.avatarPreview.src = primary.avatar;
-        elements.avatarPreview.style.display = 'block';
-        elements.avatarPlaceholder.style.display = 'none';
-      } else {
-        elements.avatarPreview.style.display = 'none';
-        elements.avatarPlaceholder.style.display = 'block';
+    if (isMobile) {
+      // Mobile: load into mobile sheet
+      const mobileAvatarPreview = document.querySelector('.mobile-sheet-content #avatarPreview');
+      const mobileAvatarPlaceholder = document.querySelector('.mobile-sheet-content #avatarPlaceholder');
+      
+      if (mobileAvatarPreview && mobileAvatarPlaceholder) {
+        if (primary.avatar) {
+          mobileAvatarPreview.src = primary.avatar;
+          mobileAvatarPreview.style.display = 'block';
+          mobileAvatarPlaceholder.style.display = 'none';
+        } else {
+          mobileAvatarPreview.style.display = 'none';
+          mobileAvatarPlaceholder.style.display = 'block';
+        }
+      }
+    } else {
+      // Desktop
+      if (elements.avatarPreview && elements.avatarPlaceholder) {
+        if (primary.avatar) {
+          elements.avatarPreview.src = primary.avatar;
+          elements.avatarPreview.style.display = 'block';
+          elements.avatarPlaceholder.style.display = 'none';
+        } else {
+          elements.avatarPreview.style.display = 'none';
+          elements.avatarPlaceholder.style.display = 'block';
+        }
       }
     }
   }

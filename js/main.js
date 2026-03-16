@@ -783,16 +783,11 @@ function renderBenchWithCallbacks() {
       // Save positions from state.lineup  
       const positionBackup = new Map();
       
-      let savedList = '';
       state.lineup.forEach(p => {
         if (p.x !== undefined && p.y !== undefined) {
           positionBackup.set(p.number, { x: p.x, y: p.y });
-          savedList += `#${p.number} `;
         }
       });
-      
-      // 🔍 Show ALL saved player numbers
-      alert(`SAVED ${positionBackup.size} players: ${savedList}`);
       
       // Swap
       swapPlayers(benchPlayer, lineupPlayer);
@@ -803,20 +798,13 @@ function renderBenchWithCallbacks() {
       const newBench = state.squad.filter(p => p.location === 'bench');
       
       // RESTORE
-      let restoredList = '';
-      let restoredCount = 0;
       newLineup.forEach(p => {
         if (positionBackup.has(p.number)) {
           const backup = positionBackup.get(p.number);
           p.x = backup.x;
           p.y = backup.y;
-          restoredCount++;
-          restoredList += `#${p.number} `;
         }
       });
-      
-      // 🔍 Show ALL restored player numbers
-      alert(`RESTORED ${restoredCount} players: ${restoredList}`);
       
       // Update state
       state.lineup = newLineup;
@@ -826,15 +814,6 @@ function renderBenchWithCallbacks() {
       // Render
       renderLineup();
       renderBenchWithCallbacks();
-      
-      // 🔍 Check after render - show positions
-      setTimeout(() => {
-        let finalList = '';
-        state.lineup.forEach(p => {
-          finalList += `#${p.number}:${p.x.toFixed(0)},${p.y.toFixed(0)} `;
-        });
-        alert(`FINAL: ${finalList}`);
-      }, 100);
       
     } catch (error) {
       console.error('❌ Swap error:', error);
@@ -1169,6 +1148,9 @@ bindAvatarInput(elements.avatarInput, async (file) => {
     elements.avatarPreview.src = resized;
     elements.avatarPreview.style.display = 'block';
     elements.avatarPlaceholder.style.display = 'none';
+    
+    // 🔧 Call syncPanel to update mobile sheet avatar too
+    syncPanel();
     
     renderLineup();
     renderSquadPanel();

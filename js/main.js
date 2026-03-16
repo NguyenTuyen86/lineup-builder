@@ -334,7 +334,7 @@ function initializeApp() {
   
   // 📱 Initialize mobile UI with error handling
   try {
-    const isMobile = window.innerWidth <= 1280 || /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    const isMobile = window.innerWidth < 1024;
     
     if (isMobile) {
       console.log('📱 Mobile device detected, initializing mobile UI...');
@@ -351,7 +351,7 @@ function initializeApp() {
   }
 
   // 🔧 Player edit inputs
-  const isMobile = window.innerWidth <= 1280 || /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+  const isMobile = window.innerWidth < 1024;
   
   if (isMobile) {
     // Event delegation on mobile sheet content
@@ -1907,7 +1907,7 @@ function syncPanel() {
     }
     
     // 🔧 Load values into inputs (AFTER role select is populated)
-    const isMobile = window.innerWidth <= 1280 || /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    const isMobile = window.innerWidth < 1024;
     
     // Use setTimeout for mobile to ensure sheet is rendered
     const loadValues = () => {

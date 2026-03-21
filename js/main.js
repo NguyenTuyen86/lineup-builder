@@ -809,20 +809,63 @@ function renderBenchWithCallbacks() {
       state.bench = newBench;
       state.players = state.lineup;
       
-      // Render
-      renderLineup();
+      // 🔧 FIX: DON'T call renderLineup() - it uses wrong offset!
+      // Instead, manually update only the swapped players
+      
+      // Render bench (this is fine)
       renderBenchWithCallbacks();
       
-      // 🔧 FIX: Use setTimeout(0) to run AFTER all sync rendering
-      setTimeout(() => {
-        state.players.forEach(p => {
-          if (p.wrap && p.x !== undefined && p.y !== undefined) {
-            // Force 25px offset
-            p.wrap.style.left = `calc(${p.x}% - 25px)`;
-            p.wrap.style.top = `calc(${p.y}% - 25px)`;
-          }
-        });
-      }, 0);
+      // For lineup: Update DOM directly WITHOUT re-rendering
+      const pitch = elements.pitch;
+      
+      // Remove bench player's old DOM
+      const benchPlayerDOM = pitch.querySelector(`[data-number="${benchPlayer.number}"]`)?.closest('.player-wrapper');
+      if (benchPlayerDOM) benchPlayerDOM.remove();
+      
+      // Remove lineup player's old DOM  
+      const lineupPlayerDOM = pitch.querySelector(`[data-number="${lineupPlayer.number}"]`)?.closest('.player-wrapper');
+      if (lineupPlayerDOM) lineupPlayerDOM.remove();
+      
+      // Now do a full re-render BUT with correct offset
+      // Clear pitch
+      pitch.querySelectorAll('.player-wrapper').forEach(w => w.remove());
+      
+      // Re-render all lineup players with MOBILE offset (25px)
+      state.players.forEach(player => {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'player-wrapper';
+        wrapper.style.position = 'absolute';
+        wrapper.style.left = `calc(${player.x}% - 25px)`;
+        wrapper.style.top = `calc(${player.y}% - 25px)`;
+        
+        const element = document.createElement('div');
+        element.className = 'player';
+        element.setAttribute('data-number', player.number);
+        element.style.background = player.role === 'GK' ? (state.colors.gk || '#FFD700') : (state.colors.player || '#FF0000');
+        element.style.border = `3px solid ${state.colors.border || '#000'}`;
+        
+        // Number
+        const numberEl = document.createElement('div');
+        numberEl.className = 'player-number';
+        numberEl.textContent = player.number;
+        element.appendChild(numberEl);
+        
+        // Name
+        const nameEl = document.createElement('div');
+        nameEl.className = 'player-name';
+        nameEl.textContent = player.name || `Player ${player.number}`;
+        nameEl.style.color = state.colors.border || '#000';
+        wrapper.appendChild(nameEl);
+        
+        wrapper.appendChild(element);
+        pitch.appendChild(wrapper);
+        
+        // Store refs
+        player.wrap = wrapper;
+        player.el = element;
+        player.numberEl = numberEl;
+        player.nameEl = nameEl;
+      });
       
     } catch (error) {
       console.error('❌ Swap error:', error);

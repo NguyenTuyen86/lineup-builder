@@ -778,12 +778,16 @@ function renderBenchWithCallbacks() {
         throw new Error('Player not found!');
       }
       
-      // Save positions from state.lineup  
+      // Save positions AND mark dragged players
       const positionBackup = new Map();
       
       state.lineup.forEach(p => {
         if (p.x !== undefined && p.y !== undefined) {
-          positionBackup.set(p.number, { x: p.x, y: p.y });
+          positionBackup.set(p.number, { 
+            x: p.x, 
+            y: p.y,
+            wasDragged: p._wasDragged || false  // Track if player was manually dragged
+          });
         }
       });
       
@@ -795,12 +799,13 @@ function renderBenchWithCallbacks() {
         .sort((a, b) => a.slotIndex - b.slotIndex);
       const newBench = state.squad.filter(p => p.location === 'bench');
       
-      // RESTORE
+      // RESTORE positions and dragged flag
       newLineup.forEach(p => {
         if (positionBackup.has(p.number)) {
           const backup = positionBackup.get(p.number);
           p.x = backup.x;
           p.y = backup.y;
+          p._wasDragged = backup.wasDragged;
         }
       });
       
@@ -813,11 +818,11 @@ function renderBenchWithCallbacks() {
       renderLineup();
       renderBenchWithCallbacks();
       
-      // 🔧 FORCE UPDATE: Fix positions after render
+      // 🔧 FIX: Force mobile offset (25px) for dragged players
       requestAnimationFrame(() => {
         state.players.forEach(p => {
-          if (p.wrap && p.x !== undefined && p.y !== undefined) {
-            // Use mobile offset (25px)
+          if (p.wrap && p._wasDragged && p.x !== undefined && p.y !== undefined) {
+            // Force mobile offset for dragged players
             p.wrap.style.left = `calc(${p.x}% - 25px)`;
             p.wrap.style.top = `calc(${p.y}% - 25px)`;
           }

@@ -813,6 +813,13 @@ function renderBenchWithCallbacks() {
       renderLineup();
       renderBenchWithCallbacks();
       
+      // 🔧 DEBUG: Check state.players
+      let debugMsg = 'AFTER RENDER:\n';
+      state.players.forEach(p => {
+        debugMsg += `#${p.number}: x=${p.x?.toFixed(1)}, y=${p.y?.toFixed(1)}\n`;
+      });
+      alert(debugMsg);
+      
       // 🔧 FIX: Use SAME offset as drag (25px for mobile)
       requestAnimationFrame(() => {
         state.players.forEach(p => {
@@ -822,6 +829,13 @@ function renderBenchWithCallbacks() {
             p.wrap.style.top = `calc(${p.y}% - 25px)`;
           }
         });
+        
+        // 🔧 DEBUG: Check wrap.style after fix
+        let debugMsg2 = 'AFTER FIX:\n';
+        state.players.forEach(p => {
+          debugMsg2 += `#${p.number}: ${p.wrap?.style.left}\n`;
+        });
+        alert(debugMsg2);
       });
       
     } catch (error) {

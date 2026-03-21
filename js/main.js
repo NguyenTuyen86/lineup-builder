@@ -649,13 +649,16 @@ function renderLineup() {
           },
           onDragMove: (positions) => {
             const selected = getSelectedPlayers();
+            const isMobile = window.innerWidth < 1024;
+            const offset = isMobile ? 25 : 30;
+            
             positions.forEach((pos, i) => {
               if (selected[i] && selected[i].wrap) {
                 selected[i].x = pos.x;
                 selected[i].y = pos.y;
-                // Use same format as render.js: calc(% - 30px)
-                selected[i].wrap.style.left = `calc(${pos.x}% - 30px)`;
-                selected[i].wrap.style.top = `calc(${pos.y}% - 30px)`;
+                // Use correct offset based on device
+                selected[i].wrap.style.left = `calc(${pos.x}% - ${offset}px)`;
+                selected[i].wrap.style.top = `calc(${pos.y}% - ${offset}px)`;
               }
             });
           },

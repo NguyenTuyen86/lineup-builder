@@ -1147,6 +1147,9 @@ function setupPlayerTouch(player) {
       // 🔧 FIX: Convert back to calc format (mobile uses 25px offset)
       wrapper.style.left = `calc(${player._player.x}% - 25px)`;
       wrapper.style.top = `calc(${player._player.y}% - 25px)`;
+      
+      // 🔧 Deselect after drag
+      player.classList.remove('selected');
     }
     
     // Reset visual

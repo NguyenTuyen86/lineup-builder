@@ -813,22 +813,15 @@ function renderBenchWithCallbacks() {
       renderLineup();
       renderBenchWithCallbacks();
       
-      // 🔧 FIX: Calculate offset from ACTUAL player size
+      // 🔧 FIX: Use SAME offset as drag (25px for mobile)
       requestAnimationFrame(() => {
-        // Get first player to measure actual size
-        const firstPlayer = document.querySelector('.player');
-        if (firstPlayer) {
-          const actualSize = firstPlayer.offsetWidth;
-          const offset = actualSize / 2; // REAL offset = half of real size
-          
-          // Apply to ALL players with positions
-          state.players.forEach(p => {
-            if (p.wrap && p.x !== undefined && p.y !== undefined) {
-              p.wrap.style.left = `calc(${p.x}% - ${offset}px)`;
-              p.wrap.style.top = `calc(${p.y}% - ${offset}px)`;
-            }
-          });
-        }
+        state.players.forEach(p => {
+          if (p.wrap && p.x !== undefined && p.y !== undefined) {
+            // SAME as drag: 25px offset
+            p.wrap.style.left = `calc(${p.x}% - 25px)`;
+            p.wrap.style.top = `calc(${p.y}% - 25px)`;
+          }
+        });
       });
       
     } catch (error) {

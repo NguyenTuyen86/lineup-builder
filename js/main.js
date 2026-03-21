@@ -770,60 +770,6 @@ function renderBenchWithCallbacks() {
   // 🆕 MOBILE SWAP HANDLER (called from mobile.js)
   window.mobileSwapHandler = (benchPlayerRef, lineupPlayerRef) => {
     try {
-      console.log(`🔄 SWAP: #${benchPlayerRef.number} ↔ #${lineupPlayerRef.number}`);
-      
-      // 📱 Create visual log panel for mobile
-      let logPanel = document.getElementById('mobileDebugLog');
-      if (!logPanel) {
-        logPanel = document.createElement('div');
-        logPanel.id = 'mobileDebugLog';
-        logPanel.style.cssText = `
-          position: fixed;
-          bottom: 60px;
-          left: 10px;
-          right: 10px;
-          max-height: 300px;
-          overflow-y: auto;
-          background: rgba(0,0,0,0.9);
-          color: #0f0;
-          font-family: monospace;
-          font-size: 11px;
-          padding: 10px;
-          border-radius: 8px;
-          z-index: 99999;
-          line-height: 1.3;
-        `;
-        document.body.appendChild(logPanel);
-        
-        // Close button
-        const closeBtn = document.createElement('button');
-        closeBtn.textContent = '✕';
-        closeBtn.style.cssText = `
-          position: absolute;
-          top: 5px;
-          right: 5px;
-          background: #f00;
-          color: #fff;
-          border: none;
-          border-radius: 4px;
-          width: 24px;
-          height: 24px;
-          cursor: pointer;
-        `;
-        closeBtn.onclick = () => logPanel.remove();
-        logPanel.appendChild(closeBtn);
-      }
-      
-      const log = (msg) => {
-        console.log(msg);
-        const line = document.createElement('div');
-        line.textContent = msg;
-        logPanel.appendChild(line);
-        logPanel.scrollTop = logPanel.scrollHeight;
-      };
-      
-      log(`🔄 SWAP: #${benchPlayerRef.number} ↔ #${lineupPlayerRef.number}`);
-      
       // Find ACTUAL objects in state.squad
       const benchPlayer = state.squad.find(p => p.number === benchPlayerRef.number);
       const lineupPlayer = state.squad.find(p => p.number === lineupPlayerRef.number);
@@ -831,12 +777,6 @@ function renderBenchWithCallbacks() {
       if (!benchPlayer || !lineupPlayer) {
         throw new Error('Player not found!');
       }
-      
-      // 🔍 LOG: Before swap
-      log('📊 BEFORE SWAP:');
-      state.lineup.forEach(p => {
-        log(`  #${p.number}: ${p.x?.toFixed(1)},${p.y?.toFixed(1)}`);
-      });
       
       // Save positions from state.lineup  
       const positionBackup = new Map();
@@ -846,8 +786,6 @@ function renderBenchWithCallbacks() {
           positionBackup.set(p.number, { x: p.x, y: p.y });
         }
       });
-      
-      log(`💾 SAVED ${positionBackup.size} positions`);
       
       // Swap
       swapPlayers(benchPlayer, lineupPlayer);
@@ -866,11 +804,6 @@ function renderBenchWithCallbacks() {
         }
       });
       
-      log('📊 AFTER RESTORE:');
-      newLineup.forEach(p => {
-        log(`  #${p.number}: ${p.x?.toFixed(1)},${p.y?.toFixed(1)}`);
-      });
-      
       // Update state
       state.lineup = newLineup;
       state.bench = newBench;
@@ -880,18 +813,19 @@ function renderBenchWithCallbacks() {
       renderLineup();
       renderBenchWithCallbacks();
       
-      // 🔍 LOG: After render
-      setTimeout(() => {
-        log('🎨 AFTER RENDER:');
+      // 🔧 FORCE UPDATE: Fix positions after render
+      requestAnimationFrame(() => {
         state.players.forEach(p => {
-          const style = p.wrap?.style.left || 'none';
-          log(`  #${p.number}: ${p.x?.toFixed(1)},${p.y?.toFixed(1)} → ${style}`);
+          if (p.wrap && p.x !== undefined && p.y !== undefined) {
+            // Use mobile offset (25px)
+            p.wrap.style.left = `calc(${p.x}% - 25px)`;
+            p.wrap.style.top = `calc(${p.y}% - 25px)`;
+          }
         });
-      }, 100);
+      });
       
     } catch (error) {
       console.error('❌ Swap error:', error);
-      alert('Swap error: ' + error.message);
     }
   };
   

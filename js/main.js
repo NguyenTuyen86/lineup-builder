@@ -778,16 +778,12 @@ function renderBenchWithCallbacks() {
         throw new Error('Player not found!');
       }
       
-      // Save positions AND mark dragged players
+      // Save positions
       const positionBackup = new Map();
       
       state.lineup.forEach(p => {
         if (p.x !== undefined && p.y !== undefined) {
-          positionBackup.set(p.number, { 
-            x: p.x, 
-            y: p.y,
-            wasDragged: p._wasDragged || false  // Track if player was manually dragged
-          });
+          positionBackup.set(p.number, { x: p.x, y: p.y });
         }
       });
       
@@ -799,13 +795,12 @@ function renderBenchWithCallbacks() {
         .sort((a, b) => a.slotIndex - b.slotIndex);
       const newBench = state.squad.filter(p => p.location === 'bench');
       
-      // RESTORE positions and dragged flag
+      // RESTORE
       newLineup.forEach(p => {
         if (positionBackup.has(p.number)) {
           const backup = positionBackup.get(p.number);
           p.x = backup.x;
           p.y = backup.y;
-          p._wasDragged = backup.wasDragged;
         }
       });
       
@@ -818,15 +813,22 @@ function renderBenchWithCallbacks() {
       renderLineup();
       renderBenchWithCallbacks();
       
-      // 🔧 FIX: Force mobile offset (25px) for dragged players
+      // 🔧 FIX: Calculate offset from ACTUAL player size
       requestAnimationFrame(() => {
-        state.players.forEach(p => {
-          if (p.wrap && p._wasDragged && p.x !== undefined && p.y !== undefined) {
-            // Force mobile offset for dragged players
-            p.wrap.style.left = `calc(${p.x}% - 25px)`;
-            p.wrap.style.top = `calc(${p.y}% - 25px)`;
-          }
-        });
+        // Get first player to measure actual size
+        const firstPlayer = document.querySelector('.player');
+        if (firstPlayer) {
+          const actualSize = firstPlayer.offsetWidth;
+          const offset = actualSize / 2; // REAL offset = half of real size
+          
+          // Apply to ALL players with positions
+          state.players.forEach(p => {
+            if (p.wrap && p.x !== undefined && p.y !== undefined) {
+              p.wrap.style.left = `calc(${p.x}% - ${offset}px)`;
+              p.wrap.style.top = `calc(${p.y}% - ${offset}px)`;
+            }
+          });
+        }
       });
       
     } catch (error) {
